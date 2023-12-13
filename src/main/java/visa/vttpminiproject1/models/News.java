@@ -1,0 +1,69 @@
+package visa.vttpminiproject1.models;
+
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
+
+import static visa.vttpminiproject1.Utils.*;
+
+import java.io.StringReader;
+
+public class News {
+    private String title;
+    private String url;
+    private String summary;
+    private String sentiment;
+
+
+    public String getTitle() {
+        return title;
+    }
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    public String getUrl() {
+        return url;
+    }
+    public void setUrl(String url) {
+        this.url = url;
+    }
+    public String getSummary() {
+        return summary;
+    }
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+    public String getSentiment() {
+        return sentiment;
+    }
+    public void setSentiment(String sentiment) {
+        this.sentiment = sentiment;
+    }
+
+    public static News toNews(String payload){
+        JsonReader reader = Json.createReader(new StringReader(payload));
+        JsonObject data = reader.readObject();
+
+        return toNews(data);
+    }
+    
+    public static News toNews(JsonObject data){
+        News news = new News();
+        news.setTitle(data.getString(ATTR_TITLE));
+        news.setUrl(data.getString(ATTR_URL));
+        news.setSentiment(data.getString(ATTR_SENTIMENT));
+        news.setSummary(data.getString(ATTR_SUMMARY));
+        return news;
+    }
+
+    public static String toJsonString(News news){
+        String jsonString = Json.createObjectBuilder()
+                                .add(ATTR_TITLE, news.getTitle())
+                                .add(ATTR_URL, news.getUrl())
+                                .add(ATTR_SUMMARY, news.getSummary())
+                                .add(ATTR_SENTIMENT, news.getSentiment())
+                                .build().toString();
+
+        return jsonString;
+    }
+}

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>News for <span data-th-text="${ticker}"></span></h1>
+    <div data-th-each="n : ${news}">
+        <h3 data-th-text="${n.title}"></h3>
+        <p data-th-text="${n.summary}"></p>
+        <b data-th-text="${n.sentiment}"></b>
+        <a data-th-href="${n.url}">Read Full Article</a>
+    </div>
+</body>
+</html>
