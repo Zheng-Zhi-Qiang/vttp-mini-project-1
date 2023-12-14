@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form data-th-action="@{/portfolio/newPosition}" method="POST" data-th-object="${position}">
+        <table>
+            <tr>
+                <td>Ticker: </td>
+                <td>
+                    <div>
+                        <input type="text" name="ticker" data-th-field="*{ticker}">
+                    </div>
+                    <div data-th-if="${#fields.hasErrors('ticker')}" data-th-errors="*{ticker}"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>Quantity Purchased: </td>
+                <td>
+                    <div>
+                        <input type="number" name="quantityPurchased" data-th-field="*{quantityPurchased}">
+                    </div>
+                    <div data-th-if="${#fields.hasErrors('quantityPurchased')}" data-th-errors="*{quantityPurchased}"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>Cost Basis (per share): </td>
+                <td>
+                    <div>
+                        <input type="text" name="costBasis" data-th-field="*{costBasis}">
+                    </div>
+                    <div data-th-if="${#fields.hasErrors('costBasis')}" data-th-errors="*{costBasis}"></div>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <button type="submit">Add</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>
