@@ -3,6 +3,7 @@ package visa.vttpminiproject1.repos;
 import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -49,4 +50,21 @@ public class UserRepo {
 
         hashOps.put(userId, "portfolio", positionsString.toString());
     }
+
+    public Optional<Map<String,String>> getUserData(String username){
+        HashOperations<String, String, String> hashOps = template.opsForHash();
+        Map<String, String> data = hashOps.entries(username);
+        if (data.isEmpty()){
+            return Optional.empty();
+        }
+        return Optional.of(data);
+    }
+
+    public void createUser(String username, String password){
+        HashOperations<String, String, String> hashOps = template.opsForHash();
+        hashOps.put(username, ATTR_USERNAME, username);
+        hashOps.put(username, ATTR_PASSWORD, password);
+    }
+
+
 }

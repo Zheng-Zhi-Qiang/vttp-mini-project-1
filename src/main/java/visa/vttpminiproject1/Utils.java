@@ -18,7 +18,7 @@ public class Utils {
     public static final String ATTR_SUMMARY = "summary";
     public static final String ATTR_SENTIMENT = "overall_sentiment_label";
 
-    //Portfolio constants
+    // Portfolio constants
     public static final String ATTR_TICKER = "ticker";
     public static final String ATTR_SYMBOL = "symbol";
     public static final String ATTR_COYNAME = "Name";
@@ -26,4 +26,9 @@ public class Utils {
     public static final String ATTR_COSTBASIS = "costBasis";
     public static final String ATTR_GLOBALQUOTE = "Global Quote";
     public static final String ATTR_LASTTRADED = "05. price";
+
+    // User constants
+    public static final String ATTR_USERNAME = "username";
+    public static final String ATTR_USERAPIKEY = "apiKey";
+    public static final String ATTR_PASSWORD = "password";
 }
