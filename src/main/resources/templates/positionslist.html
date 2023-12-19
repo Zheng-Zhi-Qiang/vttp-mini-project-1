@@ -6,6 +6,34 @@
     <title>Document</title>
 </head>
 <body>
-    Saved!
+    <div data-th-if="${#lists.isEmpty('portfolio')}">
+        <p>You have not added any positions!</p>
+    </div>
+    <div data-th-unless="${#lists.isEmpty('portfolio')}">
+        <table>
+            <thead>
+                <tr>
+                    <th>Ticker</th>
+                    <th>Company</th>
+                    <th>Number of Shares</th>
+                    <th>Cost Basis</th>
+                    <th>Last Traded</th>
+                    <th>Total Market Value</th>
+                    <th>Unrealised Profit</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-th-each="position : ${portfolio}">
+                    <td data-th-text="${position.ticker}"></td>
+                    <td data-th-text="${position.companyName}"></td>
+                    <td data-th-text="${position.quantityPurchased}"></td>
+                    <td data-th-text="${'$' + #numbers.formatDecimal(position.costBasis, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
+                    <td data-th-text="${'$' + #numbers.formatDecimal(position.lastTradedPrice, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
+                    <td data-th-text="${'$' + #numbers.formatDecimal(position.marketValue, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
+                    <td data-th-text="${position.unrealisedProfit}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

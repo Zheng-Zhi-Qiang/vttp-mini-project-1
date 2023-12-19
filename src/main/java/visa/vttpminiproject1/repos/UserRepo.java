@@ -1,11 +1,13 @@
 package visa.vttpminiproject1.repos;
 
 import java.io.StringReader;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import static visa.vttpminiproject1.Utils.BEAN_REDIS;
+import static visa.vttpminiproject1.Utils.*;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.HashOperations;
@@ -17,8 +19,8 @@ import jakarta.json.JsonReader;
 import visa.vttpminiproject1.models.Position;
 
 @Repository
-public class PortfolioRepo {
-    @Autowired @Qualifier(BEAN_REDIS)
+public class UserRepo {
+    @Autowired @Qualifier(BEAN_USERSREDIS)
     private RedisTemplate<String, String> template;
     
     public Optional<List<Position>> getPortfolio(String userId){
@@ -31,7 +33,7 @@ public class PortfolioRepo {
         JsonReader reader = Json.createReader(new StringReader(data));
         List<Position> positions = reader.readArray().stream()
                                         .map(jsonValue -> Position.toPosition(jsonValue.asJsonObject()))
-                                        .toList();
+                                        .collect(Collectors.toCollection(LinkedList::new));
 
         return Optional.of(positions);
     }

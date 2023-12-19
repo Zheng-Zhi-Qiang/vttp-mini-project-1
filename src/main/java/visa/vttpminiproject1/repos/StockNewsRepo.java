@@ -1,7 +1,7 @@
 package visa.vttpminiproject1.repos;
 
 import java.util.Optional;
-import static visa.vttpminiproject1.Utils.BEAN_REDIS;
+import static visa.vttpminiproject1.Utils.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class StockNewsRepo {
     
-    @Autowired @Qualifier(BEAN_REDIS)
+    @Autowired @Qualifier(BEAN_NEWSREDIS)
     private RedisTemplate<String, String> template;
 
     public void cacheTickerNews(String ticker, String news){

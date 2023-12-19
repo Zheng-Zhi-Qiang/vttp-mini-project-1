@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,8 +37,23 @@ public class PortfolioController {
             return mav;
         }
         String userId = "test";
-        portfolioSvc.addPosition(userId, position);
-        mav.setViewName("positionslist");
+        Integer outcome = portfolioSvc.addPosition(userId, position);
+        if (!outcome.equals(0)){
+            FieldError err = new FieldError("position", "ticker", position.getTicker(), false, null, null, "Invalid ticker!");
+            result.addError(err);
+            mav.setViewName("positionform");
+            return mav;
+        }
+
+        mav.setViewName("redirect:/portfolio/positions");
+        return mav;
+    }
+
+    @GetMapping(path = "/positions")
+    public ModelAndView getPositions(){
+        ModelAndView mav = new ModelAndView("positionslist");
+        String userId = "test";
+        mav.addObject("portfolio", portfolioSvc.getPortfolio(userId));
         return mav;
     }
 }

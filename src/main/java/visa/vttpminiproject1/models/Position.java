@@ -3,6 +3,7 @@ package visa.vttpminiproject1.models;
 import static visa.vttpminiproject1.Utils.*;
 
 import java.io.StringReader;
+import java.text.DecimalFormat;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -13,6 +14,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public class Position {
+    private static final DecimalFormat decimalFormat = new DecimalFormat("$#,##0.00;$(#,##0.00)");
+    
     @NotBlank(message = "This field is mandatory!")
     private String ticker;
 
@@ -27,7 +30,7 @@ public class Position {
     private String companyName;
     private Double lastTradedPrice;
     private Double marketValue;
-    private Double unrealisedProfit;
+    private String unrealisedProfit;
 
     public String getTicker() {
         return ticker;
@@ -65,10 +68,10 @@ public class Position {
     public void setMarketValue(Double marketValue) {
         this.marketValue = marketValue;
     }
-    public Double getUnrealisedProfit() {
+    public String getUnrealisedProfit() {
         return unrealisedProfit;
     }
-    public void setUnrealisedProfit(Double unrealisedProfit) {
+    public void setUnrealisedProfit(String unrealisedProfit) {
         this.unrealisedProfit = unrealisedProfit;
     }
 
@@ -83,6 +86,7 @@ public class Position {
         Position position = new Position();
         position.setTicker(data.getString(ATTR_TICKER));
         position.setQuantityPurchased(Integer.parseInt(data.getString(ATTR_QUANTITYPURCHASED)));
+        position.setCompanyName(data.getString(ATTR_COYNAME));
         position.setCostBasis(data.getString(ATTR_COSTBASIS));
         return position;
     }
@@ -90,9 +94,16 @@ public class Position {
     public static String toJsonString(Position position){
         String jsonString = Json.createObjectBuilder()
                                 .add(ATTR_TICKER, position.getTicker())
+                                .add(ATTR_COYNAME, position.getCompanyName())
                                 .add(ATTR_QUANTITYPURCHASED, position.getQuantityPurchased().toString())
                                 .add(ATTR_COSTBASIS, position.getCostBasis().toString())
                                 .build().toString();
         return jsonString;
+    }
+
+    public void calculateData(){
+        marketValue = lastTradedPrice * quantityPurchased;
+        Double profit = marketValue - (Double.parseDouble(costBasis) * quantityPurchased);
+        unrealisedProfit = decimalFormat.format(profit);
     }
 }
