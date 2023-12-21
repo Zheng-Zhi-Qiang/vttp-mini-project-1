@@ -17,13 +17,27 @@ function checkUsername(e) {
     .then((response) => response.json())
     .then((data) => {
         if (data.result.includes("available")){
+            if (check.classList.contains("not_available")){
+                check.classList.remove("not_available");
+            }
+            check.classList.add("available");
             submit.disabled = false;
         }
         else {
+            if (check.classList.contains("available")){
+                check.classList.remove("available");
+            }
+            check.classList.add("not_available");
             submit.disabled = true;
         }
-        check.innerText = data.result;
-        console.log(data.result)
+        
+        if (username == ""){
+            check.innerText = "";
+            submit.disabled = true;
+        }
+        else {
+            check.innerText = data.result;
+        }
     })
 }
 

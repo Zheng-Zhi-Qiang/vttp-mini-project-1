@@ -1,4 +1,9 @@
 package visa.vttpminiproject1;
+import java.util.Optional;
+
+import org.springframework.web.servlet.ModelAndView;
+
+import jakarta.servlet.http.HttpSession;
 
 public class Utils {
     public static final String BEAN_NEWSREDIS = "newsdb";
@@ -14,6 +19,7 @@ public class Utils {
     // Stock news constants
     public static final String ATTR_FEED = "feed";
     public static final String ATTR_TITLE = "title";
+    public static final String ATTR_NEWSIMG = "banner_image";
     public static final String ATTR_URL = "url";
     public static final String ATTR_SUMMARY = "summary";
     public static final String ATTR_SENTIMENT = "overall_sentiment_label";
@@ -31,4 +37,14 @@ public class Utils {
     public static final String ATTR_USERNAME = "username";
     public static final String ATTR_USERAPIKEY = "apiKey";
     public static final String ATTR_PASSWORD = "password";
+
+
+    public static Optional<ModelAndView> authenticated(HttpSession session){
+        Boolean authenticated = (Boolean) session.getAttribute("authenticated");
+        if (authenticated == null || authenticated.booleanValue() == false){
+            ModelAndView mav = new ModelAndView("redirect:/user/login");
+            return Optional.of(mav);
+        }
+        return Optional.empty();
+    }
 }

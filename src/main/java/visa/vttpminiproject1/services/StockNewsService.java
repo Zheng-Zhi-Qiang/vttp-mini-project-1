@@ -38,14 +38,25 @@ public class StockNewsService {
         String data;
 
         if (opt.isEmpty()){
-            String url = UriComponentsBuilder.fromUriString(QUERY_RESOURCE)
-                            .queryParam("function", FUNCTION_NEWS)
-                            .queryParam("tickers", ticker)
-                            .queryParam("sort", "LATEST")
-                            .queryParam("apikey", stockNewsApiKey)
-                            .build()
-                            .toUriString();
-    
+            String url;
+            if (ticker.equals("latest")){
+                url = UriComponentsBuilder.fromUriString(QUERY_RESOURCE)
+                                .queryParam("function", FUNCTION_NEWS)
+                                .queryParam("sort", "LATEST")
+                                .queryParam("apikey", stockNewsApiKey)
+                                .build()
+                                .toUriString();
+            }
+            else {
+                url = UriComponentsBuilder.fromUriString(QUERY_RESOURCE)
+                                .queryParam("function", FUNCTION_NEWS)
+                                .queryParam("tickers", ticker)
+                                .queryParam("sort", "LATEST")
+                                .queryParam("apikey", stockNewsApiKey)
+                                .build()
+                                .toUriString();
+            }
+            System.out.println(url);
             RequestEntity<Void> req = RequestEntity.get(url)
                                         .accept(MediaType.APPLICATION_JSON)
                                         .build();
@@ -66,6 +77,7 @@ public class StockNewsService {
 
         JsonReader reader = Json.createReader(new StringReader(data));
         JsonArray feed = reader.readObject().getJsonArray(ATTR_FEED);
+        System.out.println(data);
         List<News> news = feed.stream()
                             .map(jsonValue -> News.toNews(jsonValue.asJsonObject()))
                             .toList();

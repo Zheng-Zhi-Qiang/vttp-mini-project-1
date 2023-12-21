@@ -3,13 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/login.css">
+    <title>Log In</title>
 </head>
 <body>
-    <form data-th-action="@{/user/loginUser}" method="POST">
-        Username: <input type="text" name="username">
-        Password: <input type="password" name="password">
-        <button type="submit">Login</button>
-    </form>
+    <div class="container">
+        <img src="https://img.freepik.com/free-vector/tablet-login-concept-illustration_114360-7893.jpg?w=996&t=st=1703132189~exp=1703132789~hmac=2e3d8ebf032e67aacbc6fc9308329acc9ce6467b001823e5475bc847ab7a5cab" alt="">
+        <div class="form_div">
+            <h4>Welcome Back!</h4>
+            <form class="mb-3" data-th-action="@{/user/loginUser}" method="POST">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input class="form-control" type="text" name="username">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input class="form-control" type="password" name="password">
+                </div>
+                <button class="btn btn-outline-dark" type="submit">Login</button>
+            </form>
+            <p class="mb-0">Don't have an account? <a data-th-href="@{/user/register}">Register</a></p>
+        </div>
+    </div>
 </body>
 </html>

@@ -1,0 +1,31 @@
+body {
+    min-width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+img {
+    height: auto;
+    max-width: 30%;
+}
+
+.form_div {
+    min-width: 35%;
+    
+}
+
+.available {
+    color: green;
+}
+
+.not_available {
+    color: red;
+}

@@ -35,29 +35,44 @@ public class UserController {
 
     @PostMapping(path = "/registerNewUser")
     public ModelAndView createNewUser(@RequestBody MultiValueMap<String, String> data, HttpSession session){
-        ModelAndView mav = new ModelAndView("redirect:/");
-        String username = data.getFirst(ATTR_USERNAME);
-        String password = data.getFirst(ATTR_PASSWORD);
-        userSvc.createUser(username, password);
-        session.setAttribute("authenticated", true);
+        ModelAndView mav = new ModelAndView();
+        try{
+            String username = data.getFirst(ATTR_USERNAME);
+            String password = data.getFirst(ATTR_PASSWORD);
+            userSvc.createUser(username, password);
+            session.setAttribute("authenticated", true);
+            session.setAttribute("user", username);
+            mav.setViewName("redirect:/");
+        }
+        catch (Exception e){
+            mav.setViewName("error");
+        }
         return mav;
     }
 
     @PostMapping(path = "/loginUser")
     public ModelAndView loginUser(@RequestBody MultiValueMap<String, String> data, HttpSession session){
         ModelAndView mav = new ModelAndView();
-        String username = data.getFirst(ATTR_USERNAME);
-        String password = data.getFirst(ATTR_PASSWORD);
-        if (userSvc.authenticateUser(username, password)){
-            session.setAttribute("authenticated", true);
-            mav.setViewName("redirect:/");
-            return mav;
+        try {
+            String username = data.getFirst(ATTR_USERNAME);
+            String password = data.getFirst(ATTR_PASSWORD);
+            if (userSvc.authenticateUser(username, password)){
+                session.setAttribute("authenticated", true);
+                session.setAttribute("user", username);
+                mav.setViewName("redirect:/");
+                return mav;
+            }
+            else {
+                mav.setViewName("login");
+                mav.addObject("error", "Invalid username or password!");
+                return mav;
+            }
         }
-        else {
-            mav.setViewName("login");
-            mav.addObject("error", "Invalid username or password!");
-            return mav;
+        catch (Exception e){
+            mav.setViewName("error");
         }
+
+        return mav;
     }
 
     @GetMapping(path = "/logout")

@@ -26,17 +26,22 @@ public class UserRestController {
         JsonReader reader = Json.createReader(new StringReader(payload));
         JsonObject data = reader.readObject();
         String resp;
-        if (userSvc.usernameAvailable(data.getString("username"))){
-            resp = Json.createObjectBuilder()
-                    .add("result", "Username is available!")
-                    .build().toString();
+        try {
+            if (userSvc.usernameAvailable(data.getString("username"))){
+                resp = Json.createObjectBuilder()
+                        .add("result", "Username is available!")
+                        .build().toString();
+            }
+            else {
+                resp = Json.createObjectBuilder()
+                        .add("result", "Username has been taken!")
+                        .build().toString();
+            }
+                    
+            return ResponseEntity.status(200).body(resp);
         }
-        else {
-            resp = Json.createObjectBuilder()
-                    .add("result", "Username has been taken!")
-                    .build().toString();
+        catch(Exception e){
+            return ResponseEntity.status(400).body("No data");
         }
-
-        return ResponseEntity.status(200).body(resp);
     }
 }
