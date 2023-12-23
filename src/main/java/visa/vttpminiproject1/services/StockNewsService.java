@@ -56,7 +56,6 @@ public class StockNewsService {
                                 .build()
                                 .toUriString();
             }
-            System.out.println(url);
             RequestEntity<Void> req = RequestEntity.get(url)
                                         .accept(MediaType.APPLICATION_JSON)
                                         .build();
@@ -77,7 +76,6 @@ public class StockNewsService {
 
         JsonReader reader = Json.createReader(new StringReader(data));
         JsonArray feed = reader.readObject().getJsonArray(ATTR_FEED);
-        System.out.println(data);
         List<News> news = feed.stream()
                             .map(jsonValue -> News.toNews(jsonValue.asJsonObject()))
                             .toList();

@@ -1,0 +1,25 @@
+.container-with-watchlist {
+    display: flex;
+    flex-direction: row;
+}
+
+.watchlist {
+    width: 10vw;
+}
+
+.tickerlist {
+    height: 45vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: left;
+    overflow-y: hidden;
+}
+
+.tickerlist:hover, .tickerlist:active, .tickerlist:focus {
+    overflow-y: auto;
+}
+
+.content {
+    width: 80vw;
+}

@@ -1,6 +1,7 @@
 package visa.vttpminiproject1.repos;
 
 import java.io.StringReader;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ import visa.vttpminiproject1.models.Position;
 
 @Repository
 public class UserRepo {
-    @Autowired @Qualifier(BEAN_USERSREDIS)
+    @Autowired @Qualifier(BEAN_USERREDIS)
     private RedisTemplate<String, String> template;
     
     public Optional<List<Position>> getPortfolio(String userId){
@@ -30,7 +31,6 @@ public class UserRepo {
         if (data == null){
             return Optional.empty();
         }
-
         JsonReader reader = Json.createReader(new StringReader(data));
         List<Position> positions = reader.readArray().stream()
                                         .map(jsonValue -> Position.toPosition(jsonValue.asJsonObject()))
@@ -66,5 +66,29 @@ public class UserRepo {
         hashOps.put(username, ATTR_PASSWORD, password);
     }
 
+    public void saveWatchList(String userId, List<String> watchlist){
+        HashOperations<String, String, String> hashOps = template.opsForHash();
+        if (hashOps.get(userId, "watchlist") != null){
+            hashOps.delete(userId, "watchlist");
+        }
 
+        if (watchlist.size() > 0){
+            String watchlistString = watchlist.stream()
+                                        .collect(Collectors.joining(","));
+            hashOps.put(userId, "watchlist", watchlistString);
+        }
+    }
+
+    public Optional<List<String>> getWatchList(String userId){
+        HashOperations<String, String, String> hashOps = template.opsForHash();
+        String data = hashOps.get(userId, "watchlist");
+        if (data == null){
+            return Optional.empty();
+        }
+        String[] dataArray = data.split(",");
+        List<String> watchlist = Arrays.stream(dataArray)
+                                        .collect(Collectors.toCollection(LinkedList::new));
+
+        return Optional.of(watchlist);
+    }
 }

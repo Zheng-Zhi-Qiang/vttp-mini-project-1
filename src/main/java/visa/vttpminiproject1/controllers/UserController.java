@@ -40,7 +40,7 @@ public class UserController {
             String username = data.getFirst(ATTR_USERNAME);
             String password = data.getFirst(ATTR_PASSWORD);
             userSvc.createUser(username, password);
-            session.setAttribute("authenticated", true);
+            session.setAttribute("authenticated", "true");
             session.setAttribute("user", username);
             mav.setViewName("redirect:/");
         }
@@ -57,7 +57,7 @@ public class UserController {
             String username = data.getFirst(ATTR_USERNAME);
             String password = data.getFirst(ATTR_PASSWORD);
             if (userSvc.authenticateUser(username, password)){
-                session.setAttribute("authenticated", true);
+                session.setAttribute("authenticated", "true");
                 session.setAttribute("user", username);
                 mav.setViewName("redirect:/");
                 return mav;

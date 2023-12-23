@@ -1,0 +1,19 @@
+.bearish {
+    background-color: #fdaaaa;
+}
+
+.somewhat-bearish {
+    background-color: #fde0e0;
+}
+
+.somewhat-bullish {
+    background-color: #e8f4ea;
+}
+
+.bullish {
+    background-color: #b8d8be;
+}
+
+.neutral {
+    background-color: white;
+}

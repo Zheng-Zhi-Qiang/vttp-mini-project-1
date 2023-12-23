@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="/css/latest.css">
-    <link rel="stylesheet" href="/css/news_sentiment.css">
-    <title>Latest News</title>
+    <link rel="stylesheet" href="/css/watchlist.css">
+    <link rel="stylesheet" href="/css/stockdata.css">
+    <title>Stock Data</title>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg mb-4">
@@ -36,19 +36,30 @@
             </ul>
         </div>
     </nav>
-    <div class="container">
-        <div class="news_container mb-3" data-th-classappend="${#strings.toLowerCase(article.sentiment)}" data-th-each="article: ${news}">
-            <div class="img_container">
-                <img data-th-if="${#strings.equals(article.img,'')}" src="https://digitalfinger.id/wp-content/uploads/2019/12/no-image-available-icon-6.png" alt="">
-                <img data-th-unless="${#strings.equals(article.img,'')}" data-th-src="${article.img}" alt="">
+    <div class="container-with-watchlist">
+        <div class="watchlist ms-4 me-auto">
+            <h5 class="border-bottom pb-1">Watchlist</h5>
+            <div class="tickerlist mt-2">
+                <ul id="watchlist" class="navbar-nav">
+                    <li data-th-each="ticker: ${watchlist}" class="nav-item ms-1 mb-0">
+                        <a data-th-href="@{/stock/{symbol}(symbol=${ticker})}" class="nav-link active" data-th-text="${ticker}"></a>
+                    </li>
+                </ul>
             </div>
-            <div class="details_container">
-                <h4 data-th-text="${article.title}"></h4>
-                <p data-th-text="${article.summary}"></p>
-                <p>Sentiment: <span data-th-text="${article.sentiment}"></span></p>
-                <a data-th-href="${article.url}">Full Article</a>
+        </div>
+        <div class="content me-5">
+            <div class="content-top">
+                <b>Ticker: <span id="ticker" data-th-text="${data.ticker}"></span></b>
+                <a data-th-if="${#lists.contains(watchlist, data.ticker)}" id="watchlist_change" class="btn btn-outline-dark ms-auto">Remove from Watchlist</a>
+                <a data-th-unless="${#lists.contains(watchlist, data.ticker)}" id="watchlist_change" class="btn btn-outline-dark ms-auto">Add to Watchlist</a>
+            </div>
+            <div>
+                <b>Company Name: <span data-th-text="${data.name}"></span></b>
+                <p data-th-text="${data.description}"></p>
             </div>
         </div>
     </div>
 </body>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script src="/js/watchlist.js"></script>
 </html>

@@ -26,11 +26,10 @@ public class LandingPageController {
         Optional<ModelAndView> opt = Utils.authenticated(session);
         ModelAndView mav = new ModelAndView("index");
         if (!opt.isEmpty()){
-            mav.addObject("auth", "false");
+            session.setAttribute("authenticated", "false");
         }
         else {
-            mav.addObject("auth", "true");
-            mav.addObject("user", (String) session.getAttribute("user"));
+            session.setAttribute("authenticated", "true");
         }
         return mav;
     }
@@ -38,15 +37,6 @@ public class LandingPageController {
     @GetMapping(path = "/latest")
     public ModelAndView getLatestNews(HttpSession session){
         ModelAndView mav = new ModelAndView("latest");
-        Optional<ModelAndView> opt = Utils.authenticated(session);
-        if (!opt.isEmpty()){
-            mav.addObject("auth", "false");
-        }
-        else {
-            mav.addObject("auth", "true");
-            mav.addObject("user", (String) session.getAttribute("user"));
-        }
-        
         List<News> news = newsSvc.getTickerNews("latest");
         mav.addObject("news", news);
         return mav;

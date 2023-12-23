@@ -16,8 +16,10 @@ import org.springframework.web.servlet.ModelAndView;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import visa.vttpminiproject1.Utils;
+import visa.vttpminiproject1.models.Portfolio;
 import visa.vttpminiproject1.models.Position;
 import visa.vttpminiproject1.services.PortfolioService;
+import visa.vttpminiproject1.services.WatchListService;
 
 @Controller
 @RequestMapping(path = "/portfolio")
@@ -25,6 +27,9 @@ public class PortfolioController {
 
     @Autowired
     private PortfolioService portfolioSvc;
+
+    @Autowired
+    private WatchListService watchlistSvc;
     
     @GetMapping(path = "/positionForm")
     public ModelAndView newPositionForm(HttpSession session){
@@ -49,8 +54,8 @@ public class PortfolioController {
             mav.setViewName("positionform");
             return mav;
         }
-        String userId = "test";
-        Integer outcome = portfolioSvc.addPosition(userId, position);
+        String user = (String) session.getAttribute("user");
+        Integer outcome = portfolioSvc.addPosition(user, position);
         if (!outcome.equals(0)){
             FieldError err = new FieldError("position", "ticker", position.getTicker(), false, null, null, "Invalid ticker!");
             result.addError(err);
@@ -69,8 +74,11 @@ public class PortfolioController {
             return opt.get();
         }
         ModelAndView mav = new ModelAndView("positionslist");
-        String userId = "test";
-        mav.addObject("portfolio", portfolioSvc.getPortfolio(userId));
+        String user = (String) session.getAttribute("user");
+        Portfolio portfolio = portfolioSvc.getPortfolio(user);
+        mav.addObject("portfolio", portfolio.getPositions());
+        mav.addObject("nav", portfolio.getNAV());
+        mav.addObject("watchlist", watchlistSvc.getWatchList(user));
         return mav;
     }
 }

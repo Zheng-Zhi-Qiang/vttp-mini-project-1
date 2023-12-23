@@ -7,21 +7,28 @@
     <title>About</title>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg mb-4">
         <div class="container-fluid">
-            <p data-th-unless="${#strings.equals(auth, 'false')}" class="navbar-text mb-0">Hello, <span data-th-text="${user}"></span></p>
+            <p data-th-unless="${#strings.equals(session.authenticated, 'false')}" class="navbar-text mb-0 ms-3">Hello, <span data-th-text="${session.user}"></span></p>
             <div class="placeholder"></div>
-            <ul class="navbar-nav ml-auto mb-lg-0">
-                <li class="nav-item">
+            <ul class="navbar-nav ms-auto mb-lg-0">
+                <form data-th-unless="${#strings.equals(session.authenticated, 'false')}" class="d-flex me-3" role="search" data-th-action="@{/stock/data}" method="GET">
+                    <input class="form-control me-1 form-control-sm shadow-none" type="text" placeholder="Search Ticker" aria-label="Search" name="ticker">
+                    <button class="btn btn-outline-dark" type="submit">Search</button>
+                </form>
+                <li data-th-unless="${#strings.equals(session.authenticated, 'false')}" class="nav-item">
+                    <a data-th-href="@{/portfolio/positions}" class="nav-link active">Portfolio</a>
+                </li>
+                <li data-th-if="${#strings.equals(session.authenticated, 'false')}" class="nav-item">
                     <a data-th-href="@{/}" class="nav-link active">About</a>
                 </li>
                 <li class="nav-item">
                     <a data-th-href="@{/latest}" class="nav-link active">News</a>
                 </li>
-                <li data-th-if="${#strings.equals(auth, 'false')}" class="nav-item">
+                <li data-th-if="${#strings.equals(session.authenticated, 'false')}" class="nav-item">
                     <a data-th-href="@{/user/login}" class="nav-link active">Log In</a>
                 </li>
-                <li data-th-unless="${#strings.equals(auth, 'false')}" class="nav-item">
+                <li data-th-unless="${#strings.equals(session.authenticated, 'false')}" class="nav-item">
                     <a data-th-href="@{/user/logout}" class="nav-link active">Log Out</a>
                 </li>
             </ul>

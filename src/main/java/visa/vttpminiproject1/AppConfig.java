@@ -1,5 +1,7 @@
 package visa.vttpminiproject1;
 
+import static visa.vttpminiproject1.Utils.*;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,8 +37,11 @@ public class AppConfig {
 
     @Value("${spring.redis.user.database}")
     private Integer redisUserDatabase;
+
+    @Value("${spring.redis.stock.database}")
+    private Integer redisStockDatabase;
     
-    @Bean("newsdb") // everything with this annotation will come here and look for the annotation
+    @Bean(BEAN_NEWSREDIS) // everything with this annotation will come here and look for the annotation
     public RedisTemplate<String, String> createNewsRedisConnection(){
         // Create a redis configuration
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
@@ -64,13 +69,41 @@ public class AppConfig {
         return template;
     }
     
-    @Bean("userdb") // everything with this annotation will come here and look for the annotation
+    @Bean(BEAN_USERREDIS) // everything with this annotation will come here and look for the annotation
     public RedisTemplate<String, String> createUserRedisConnection(){
         // Create a redis configuration
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
         config.setHostName(redisHost);
         config.setPort(redisPort);
         config.setDatabase(redisUserDatabase);
+        if (!"NOT_SET".equals(redisUsername.trim())){
+            config.setUsername(redisUsername);
+            config.setPassword(redisPassword);
+        }
+
+        logger.log(Level.INFO, "Using Redis database %d".formatted(redisPort));
+
+        JedisClientConfiguration jedisClient = JedisClientConfiguration.builder().build();
+        JedisConnectionFactory jedisFac = new JedisConnectionFactory(config, jedisClient);
+        jedisFac.afterPropertiesSet();
+
+        RedisTemplate<String, String> template = new RedisTemplate<>();
+        template.setConnectionFactory(jedisFac);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(new StringRedisSerializer());
+        
+        return template;
+    }
+
+    @Bean(BEAN_TICKERREDIS) // everything with this annotation will come here and look for the annotation
+    public RedisTemplate<String, String> createTickerRedisConnection(){
+        // Create a redis configuration
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+        config.setHostName(redisHost);
+        config.setPort(redisPort);
+        config.setDatabase(redisStockDatabase);
         if (!"NOT_SET".equals(redisUsername.trim())){
             config.setUsername(redisUsername);
             config.setPassword(redisPassword);

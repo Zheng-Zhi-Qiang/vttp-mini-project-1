@@ -1,14 +1,6 @@
 package visa.vttpminiproject1.services;
 
-import static visa.vttpminiproject1.Utils.API_FUNCTION;
-import static visa.vttpminiproject1.Utils.API_KEY;
-import static visa.vttpminiproject1.Utils.ATTR_COYNAME;
-import static visa.vttpminiproject1.Utils.ATTR_GLOBALQUOTE;
-import static visa.vttpminiproject1.Utils.ATTR_LASTTRADED;
-import static visa.vttpminiproject1.Utils.ATTR_SYMBOL;
-import static visa.vttpminiproject1.Utils.FUNCTION_OVERVIEW;
-import static visa.vttpminiproject1.Utils.FUNCTION_QUOTE;
-import static visa.vttpminiproject1.Utils.QUERY_RESOURCE;
+import static visa.vttpminiproject1.Utils.*;
 
 import java.io.StringReader;
 import java.util.LinkedList;
@@ -27,7 +19,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
+import visa.vttpminiproject1.models.Portfolio;
 import visa.vttpminiproject1.models.Position;
+import visa.vttpminiproject1.models.StockData;
+import visa.vttpminiproject1.repos.StockDataRepo;
 import visa.vttpminiproject1.repos.UserRepo;
 
 @Service
@@ -35,6 +30,9 @@ public class PortfolioService {
     
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private StockDataRepo dataRepo;
 
     @Value("${stock.api.key}")
     private String apiKey;
@@ -74,10 +72,11 @@ public class PortfolioService {
         }
     }
 
-    public List<Position> getPortfolio(String userId){
+    public Portfolio getPortfolio(String userId){
+        Portfolio portfolio = new Portfolio();
         Optional<List<Position>> opt = userRepo.getPortfolio(userId);
         if (opt.isEmpty()){
-            return new LinkedList<>();
+            portfolio.setPositions(new LinkedList<>());
         }
         else {
             List<Position> data = opt.get();
@@ -88,7 +87,40 @@ public class PortfolioService {
                                             return position;
                                         })
                                         .toList();
-            return positions;
+            portfolio.setPositions(positions);
+        }
+
+        return portfolio;
+    }
+
+    public Optional<StockData> getStockData(String ticker){
+        Optional<StockData> opt = dataRepo.getData(ticker);
+        if (opt.isEmpty()){
+            String url = UriComponentsBuilder.fromUriString(QUERY_RESOURCE)
+                            .queryParam(API_FUNCTION, FUNCTION_OVERVIEW)
+                            .queryParam(ATTR_SYMBOL, ticker)
+                            .queryParam(API_KEY, apiKey)
+                            .build()
+                            .toUriString();
+    
+            RequestEntity<Void> req = RequestEntity.get(url)
+                                        .accept(MediaType.APPLICATION_JSON)
+                                        .build();
+            ResponseEntity<String> resp = template.exchange(req, String.class);
+    
+            JsonReader reader = Json.createReader(new StringReader(resp.getBody()));
+            JsonObject respData = reader.readObject();
+    
+            if (respData.isEmpty()){
+                return Optional.empty();
+            }
+            else {
+                dataRepo.cacheData(ticker, respData.toString());
+                return Optional.of(StockData.toStockData(respData));
+            }
+        }
+        else {
+            return opt;
         }
     }
 
@@ -101,26 +133,14 @@ public class PortfolioService {
     }
 
     private Optional<Position> validatePosition(Position position){
-        String url = UriComponentsBuilder.fromUriString(QUERY_RESOURCE)
-                        .queryParam(API_FUNCTION, FUNCTION_OVERVIEW)
-                        .queryParam(ATTR_SYMBOL, position.getTicker())
-                        .queryParam(API_KEY, apiKey)
-                        .build()
-                        .toUriString();
+        String ticker = position.getTicker();
+        Optional<StockData> opt = getStockData(ticker);
 
-        RequestEntity<Void> req = RequestEntity.get(url)
-                                    .accept(MediaType.APPLICATION_JSON)
-                                    .build();
-        ResponseEntity<String> resp = template.exchange(req, String.class);
-
-        JsonReader reader = Json.createReader(new StringReader(resp.getBody()));
-        JsonObject respData = reader.readObject();
-
-        if (respData.isEmpty()){
+        if (opt.isEmpty()){
             return Optional.empty();
         }
         else {
-            position.setCompanyName(respData.getString(ATTR_COYNAME));
+            position.setCompanyName(opt.get().getName());
             return Optional.of(position);
         }
     }
