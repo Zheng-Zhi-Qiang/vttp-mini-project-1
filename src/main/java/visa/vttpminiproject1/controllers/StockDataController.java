@@ -41,7 +41,8 @@ public class StockDataController {
             mav.addObject("data", result.get());
         }
         else {
-            mav.setViewName("nostockdata");
+            mav.setViewName("no_stockdata");
+            mav.addObject("ticker", ticker);
         }
         mav.addObject("watchlist", watchlistSvc.getWatchList((String) session.getAttribute("user")));
         return mav;

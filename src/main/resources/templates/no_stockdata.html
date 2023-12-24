@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/watchlist.css">
-    <link rel="stylesheet" href="/css/portfolio.css">
-    <title>Portfolio</title>
+    <link rel="stylesheet" href="/css/nostockdata.css">
+    <title>Stock Data</title>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg mb-4">
@@ -49,37 +49,7 @@
         </div>
         <div class="content me-5">
             <div class="content-top">
-                <b>Net Asset Value: <span data-th-text="${'$' + #numbers.formatDecimal(nav, 1, 'DEFAULT', 2, 'DEFAULT')}"></span></b>
-                <a class="btn btn-outline-dark ms-auto" data-th-href="@{/portfolio/positionForm}">New Position</a>
-            </div>
-            <div data-th-if="${#lists.isEmpty(portfolio)}">
-                <p>You have not added any positions!</p>
-            </div>
-            <div data-th-unless="${#lists.isEmpty(portfolio)}">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Ticker</th>
-                            <th>Company</th>
-                            <th>Number of Shares</th>
-                            <th>Cost Basis</th>
-                            <th>Last Traded</th>
-                            <th>Total Market Value</th>
-                            <th>Unrealised Profit</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr data-th-each="position : ${portfolio}">
-                            <td><a data-th-href="@{/stock/{symbol}(symbol=${position.ticker})}" class="nav-link active" data-th-text="${position.ticker}"></a></td>
-                            <td data-th-text="${position.companyName}"></td>
-                            <td data-th-text="${position.quantityPurchased}"></td>
-                            <td data-th-text="${'$' + #numbers.formatDecimal(position.costBasis, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
-                            <td data-th-text="${'$' + #numbers.formatDecimal(position.lastTradedPrice, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
-                            <td data-th-text="${'$' + #numbers.formatDecimal(position.marketValue, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
-                            <td data-th-text="${position.unrealisedProfit}"></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <b>No data for <span id="ticker" data-th-text="${ticker}"></span></b>
             </div>
         </div>
     </div>

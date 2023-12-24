@@ -18,12 +18,6 @@ public class StockNewsController {
     @Autowired
     private StockNewsService newsSvc;
 
-    @GetMapping(path = "/query")
-    public ModelAndView query(){
-        ModelAndView mav = new ModelAndView("query");
-        return mav;
-    }
-
     @GetMapping(path = "/tickerNews")
     public ModelAndView getTickerNews(@RequestParam String ticker){
         ModelAndView mav = new ModelAndView("news");
