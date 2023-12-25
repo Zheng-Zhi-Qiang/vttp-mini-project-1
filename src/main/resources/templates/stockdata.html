@@ -20,6 +20,9 @@
                     <button class="btn btn-outline-dark" type="submit">Search</button>
                 </form>
                 <li data-th-unless="${#strings.equals(session.authenticated, 'false')}" class="nav-item">
+                    <a data-th-href="@{/user/home}" class="nav-link active">Home</a>
+                </li>
+                <li data-th-unless="${#strings.equals(session.authenticated, 'false')}" class="nav-item">
                     <a data-th-href="@{/portfolio/positions}" class="nav-link active">Portfolio</a>
                 </li>
                 <li data-th-if="${#strings.equals(session.authenticated, 'false')}" class="nav-item">

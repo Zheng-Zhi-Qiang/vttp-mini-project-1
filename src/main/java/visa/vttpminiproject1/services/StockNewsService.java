@@ -1,9 +1,13 @@
 package visa.vttpminiproject1.services;
 
 import java.io.StringReader;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,59 +30,75 @@ import static visa.vttpminiproject1.Utils.*;
 public class StockNewsService {
     @Autowired
     private StockNewsRepo newsRepo;
-    
+
+    @Autowired
+    private WatchListService watchlistService;
+
     @Value("${stock.api.key}")
     String stockNewsApiKey;
 
     private RestTemplate template = new RestTemplate();
 
-    public List<News> getTickerNews(String ticker){
+    public List<News> getTickerNews(String ticker) {
 
         Optional<String> opt = newsRepo.getTickerNews(ticker);
         String data;
 
-        if (opt.isEmpty()){
+        if (opt.isEmpty()) {
             String url;
-            if (ticker.equals("latest")){
+            if (ticker.equals("latest")) {
                 url = UriComponentsBuilder.fromUriString(QUERY_RESOURCE)
-                                .queryParam("function", FUNCTION_NEWS)
-                                .queryParam("sort", "LATEST")
-                                .queryParam("apikey", stockNewsApiKey)
-                                .build()
-                                .toUriString();
-            }
-            else {
+                        .queryParam("function", FUNCTION_NEWS)
+                        .queryParam("sort", "LATEST")
+                        .queryParam("apikey", stockNewsApiKey)
+                        .build()
+                        .toUriString();
+            } else {
                 url = UriComponentsBuilder.fromUriString(QUERY_RESOURCE)
-                                .queryParam("function", FUNCTION_NEWS)
-                                .queryParam("tickers", ticker)
-                                .queryParam("sort", "LATEST")
-                                .queryParam("apikey", stockNewsApiKey)
-                                .build()
-                                .toUriString();
+                        .queryParam("function", FUNCTION_NEWS)
+                        .queryParam("tickers", ticker)
+                        .queryParam("sort", "LATEST")
+                        .queryParam("apikey", stockNewsApiKey)
+                        .build()
+                        .toUriString();
             }
             RequestEntity<Void> req = RequestEntity.get(url)
-                                        .accept(MediaType.APPLICATION_JSON)
-                                        .build();
-            
+                    .accept(MediaType.APPLICATION_JSON)
+                    .build();
+
             try {
                 ResponseEntity<String> resp = template.exchange(req, String.class);
                 data = resp.getBody();
                 newsRepo.cacheTickerNews(ticker, data);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 return new LinkedList<>();
             }
-        }
-        else {
+        } else {
             data = opt.get();
         }
 
         JsonReader reader = Json.createReader(new StringReader(data));
         JsonArray feed = reader.readObject().getJsonArray(ATTR_FEED);
         List<News> news = feed.stream()
-                            .map(jsonValue -> News.toNews(jsonValue.asJsonObject()))
-                            .toList();
+                .map(jsonValue -> News.toNews(jsonValue.asJsonObject()))
+                .collect(Collectors.toCollection(LinkedList::new));
+
         return news;
+    }
+
+    public List<News> getWatchListNews(String user) {
+        List<String> watchlist = watchlistService.getWatchList(user);
+        if (watchlist.isEmpty()) {
+            return getTickerNews("latest");
+        } else {
+            List<News> watchlistNews = new LinkedList<>();
+            for (String ticker : watchlist) {
+                watchlistNews = Stream.concat(watchlistNews.stream(), getTickerNews(ticker).stream())
+                                    .collect(Collectors.toCollection(LinkedList::new));
+            }
+            Collections.sort(watchlistNews, Comparator.comparing(News::getDatetime));
+            return watchlistNews;
+        }
     }
 }

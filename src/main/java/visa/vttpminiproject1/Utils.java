@@ -1,4 +1,5 @@
 package visa.vttpminiproject1;
+
 import java.util.Optional;
 
 import org.springframework.web.servlet.ModelAndView;
@@ -16,7 +17,7 @@ public class Utils {
     public static final String FUNCTION_QUOTE = "GLOBAL_QUOTE";
     public static final String API_FUNCTION = "function";
     public static final String API_KEY = "apikey";
-    
+
     // Stock news constants
     public static final String ATTR_FEED = "feed";
     public static final String ATTR_TITLE = "title";
@@ -24,6 +25,7 @@ public class Utils {
     public static final String ATTR_URL = "url";
     public static final String ATTR_SUMMARY = "summary";
     public static final String ATTR_SENTIMENT = "overall_sentiment_label";
+    public static final String ATTR_DATETIME = "time_published";
 
     // Portfolio constants
     public static final String ATTR_TICKER = "ticker";
@@ -38,7 +40,6 @@ public class Utils {
     public static final String ATTR_USERNAME = "username";
     public static final String ATTR_USERAPIKEY = "apiKey";
     public static final String ATTR_PASSWORD = "password";
-
 
     // Stock data constants
     public static final String DATA_SYMBOL = "Symbol";
@@ -64,10 +65,9 @@ public class Utils {
     public static final String DATA_BETA = "Beta";
     public static final String DATA_OUTSTANDINGSHARES = "SharesOutstanding";
 
-
-    public static Optional<ModelAndView> authenticated(HttpSession session){
+    public static Optional<ModelAndView> authenticated(HttpSession session) {
         String authenticated = (String) session.getAttribute("authenticated");
-        if (authenticated == null || authenticated.equals("false")){
+        if (authenticated == null || authenticated.equals("false")) {
             ModelAndView mav = new ModelAndView("redirect:/user/login");
             return Optional.of(mav);
         }

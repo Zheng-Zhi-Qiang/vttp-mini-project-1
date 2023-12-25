@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/error.css">
+    <title>Error</title>
 </head>
 <body>
-    <div>
-        <iframe src="https://giphy.com/embed/13CoXDiaCcCoyk" width="480" height="398" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/wiggle-shaq-13CoXDiaCcCoyk">via GIPHY</a></p>
-        <b>Not Found</b>
+    <div class="error-container">
+        <img src="https://img.freepik.com/free-vector/tiny-people-examining-operating-system-error-warning-web-page-isolated-flat-illustration_74855-11104.jpg?w=1480&t=st=1703489598~exp=1703490198~hmac=3e0890b10300128f8b38a18e619f0c208ab321d1ea19ca4822d17609f9d482e9" alt="">
+        <b>Status <span data-th-text="${status}"></span></b>
     </div>
 </body>
 </html>
