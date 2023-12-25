@@ -28,7 +28,7 @@ public class WatchListRestController {
     public ResponseEntity<String> add(@RequestBody String payload, HttpSession session){
         JsonReader reader = Json.createReader(new StringReader(payload));
         JsonObject data = reader.readObject();
-        String ticker = data.getString("ticker").trim();
+        String ticker = data.getString("ticker");
         String user = (String) session.getAttribute("user");
         List<String> watchlist = watchlistSvc.addToWatchList(user, ticker);
         JsonObject resp = Json.createObjectBuilder()
@@ -41,7 +41,7 @@ public class WatchListRestController {
     public ResponseEntity<String> remove(@RequestBody String payload, HttpSession session){
         JsonReader reader = Json.createReader(new StringReader(payload));
         JsonObject data = reader.readObject();
-        String ticker = data.getString("ticker").trim();
+        String ticker = data.getString("ticker");
         String user = (String) session.getAttribute("user");
         List<String> watchlist = watchlistSvc.removeFromWatchList(user, ticker);
         JsonObject resp = Json.createObjectBuilder()

@@ -6,6 +6,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/watchlist.css">
     <link rel="stylesheet" href="/css/stockdata.css">
+    <link rel="stylesheet" href="/css/news_sentiment.css">
     <title>Stock Data</title>
 </head>
 <body>
@@ -48,18 +49,41 @@
             </div>
         </div>
         <div class="content me-5">
-            <div class="content-top">
+            <div class="content-top ps-1">
                 <b>Ticker: <span id="ticker" data-th-text="${data.ticker}"></span></b>
                 <a data-th-if="${#lists.contains(watchlist, data.ticker)}" id="watchlist_change" class="btn btn-outline-dark ms-auto">Remove from Watchlist</a>
                 <a data-th-unless="${#lists.contains(watchlist, data.ticker)}" id="watchlist_change" class="btn btn-outline-dark ms-auto">Add to Watchlist</a>
             </div>
-            <div>
+            <div class="ps-1">
                 <b>Company Name: <span data-th-text="${data.name}"></span></b>
                 <p data-th-text="${data.description}"></p>
+                <p><b>Country:</b> <span data-th-text="${data.country}"></span></p>
+                <p><b>Sector:</b> <span data-th-text="${#strings.capitalizeWords(#strings.toLowerCase(data.sector))}"></span></p>
+                <p><b>Industry:</b> <span data-th-text="${#strings.capitalizeWords(#strings.toLowerCase(data.industry))}"></span></p>
+            </div>
+            <div class="tab-div pb-1 mb-2 border-bottom">
+                <div class="border-end">
+                    <a id="news" class="btn btn-outline-dark border-0">News</a>
+                </div>
+                <div>
+                    <a id="financials" class="btn btn-outline-dark border-0">Financials</a>
+                </div>
+            </div>
+            <div id="tab-content" class="tab-content">
+                <div class="news mb-3 p-2" data-th-classappend="${#strings.toLowerCase(article.sentiment)}" data-th-each="article: ${news}">
+                    <div class="brief">
+                        <h6 class="brief-title" data-th-text="${article.title}"></h6>
+                        <a data-th-href="${article.url}">Full Article</a>
+                    </div>
+                    <div class="ms-auto">
+                        <p class="m-0">Sentiment: <span data-th-text="${article.sentiment}"></span></p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </body>
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script src="/js/watchlist.js"></script>
+<script src="/js/stock_data.js"></script>
 </html>

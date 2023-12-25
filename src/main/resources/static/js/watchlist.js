@@ -19,7 +19,7 @@ function changeWatchlist(e) {
 
     fetch(url, {
         method: "POST",
-        headers: {"Content-Type": "application/json", "Accept": "text/html"},
+        headers: {"Content-Type": "application/json", "Accept": "application/json"},
         body: JSON.stringify(data)
     })
     .then((response) => response.json())

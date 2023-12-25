@@ -196,4 +196,27 @@ public class StockData {
         stockData.setSharesOutstanding(Long.parseLong(data.getString(DATA_OUTSTANDINGSHARES)));
         return stockData;
     }
+
+    public static String toJsonString(StockData data){
+        String stringData = Json.createObjectBuilder()
+                                .add("Market Capitalization", data.getMarketCap())
+                                .add("EBITDA", data.getEbitda())
+                                .add("PE Ratio", data.getPe())
+                                .add("PEG Ratio", data.getPeg())
+                                .add("Book Value", data.getBookValue())
+                                .add("Dividend Yield", data.getDividendYield())
+                                .add("EPS", data.getEps())
+                                .add("Profit Margin", data.getProfitMargin())
+                                .add("Operating Margin", data.getOperatingMargin())
+                                .add("Quarterly Earnings Growth (YOY)", data.getQtrEarningsGrowthYOY())
+                                .add("Quarterly Revenue Growth (YOY)", data.getQtrRevenueGrowthYOY())
+                                .add("Forward PE Ratio", data.getForwardpe())
+                                .add("Price-To-Sales Ratio", data.getPriceToSales())
+                                .add("Price-To-Book Ratio", data.getPriceToBook())
+                                .add("Beta Value", data.getBeta())
+                                .add("Outstanding Shares", data.getSharesOutstanding())
+                                .build().toString();
+
+        return stringData;
+    }
 }

@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpSession;
 import visa.vttpminiproject1.Utils;
 import visa.vttpminiproject1.models.StockData;
 import visa.vttpminiproject1.services.PortfolioService;
+import visa.vttpminiproject1.services.StockNewsService;
 import visa.vttpminiproject1.services.WatchListService;
 
 @Controller
@@ -26,6 +27,9 @@ public class StockDataController {
 
     @Autowired
     private WatchListService watchlistSvc;
+
+    @Autowired
+    private StockNewsService newsSvc;
     
     @GetMapping(path = "/data")
     public ModelAndView getStockData(@RequestParam String ticker, HttpSession session){
@@ -39,6 +43,7 @@ public class StockDataController {
         if (!result.isEmpty()){
             mav.setViewName("stockdata");
             mav.addObject("data", result.get());
+            mav.addObject("news", newsSvc.getTickerNews(ticker));
         }
         else {
             mav.setViewName("no_stockdata");
