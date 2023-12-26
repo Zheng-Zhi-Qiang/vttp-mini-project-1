@@ -14,21 +14,34 @@ import visa.vttpminiproject1.models.StockData;
 
 @Repository
 public class StockDataRepo {
-    
-    @Autowired @Qualifier(BEAN_TICKERREDIS)
+
+    @Autowired
+    @Qualifier(BEAN_TICKERREDIS)
     private RedisTemplate<String, String> template;
 
-    public void cacheData(String ticker, String data){
+    public void cacheData(String ticker, String data) {
         ValueOperations<String, String> valueOps = template.opsForValue();
         valueOps.append(ticker, data);
     }
 
-    public Optional<StockData> getData(String ticker){
+    public Optional<StockData> getData(String ticker) {
         ValueOperations<String, String> valueOps = template.opsForValue();
         String data = valueOps.get(ticker);
-        if (null == data){
+        if (null == data) {
             return Optional.empty();
         }
-        return Optional.ofNullable(StockData.toStockData(data));
+        return Optional.of(StockData.toStockData(data));
     }
+
+    public void cacheQuoteData(String ticker, String data) {
+        ValueOperations<String, String> valueOps = template.opsForValue();
+        valueOps.append("%s-quote".formatted(ticker), data);
+    }
+
+    public Optional<String> getQuoteData(String ticker) {
+        ValueOperations<String, String> valueOps = template.opsForValue();
+        String data = valueOps.get("%s-quote".formatted(ticker));
+        return Optional.ofNullable(data);
+    }
+
 }

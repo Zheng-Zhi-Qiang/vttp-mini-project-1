@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +28,7 @@ import visa.vttpminiproject1.repos.UserRepo;
 
 @Service
 public class PortfolioService {
-    
+
     @Autowired
     private UserRepo userRepo;
 
@@ -39,126 +40,161 @@ public class PortfolioService {
 
     private RestTemplate template = new RestTemplate();
 
-    public Integer addPosition(String userId, Position position){
+    public Integer addPosition(String userId, Position position) {
         Optional<List<Position>> opt = userRepo.getPortfolio(userId);
 
         Optional<Position> positionValid = validatePosition(position);
-        if (!positionValid.isEmpty()){
+        if (!positionValid.isEmpty()) {
             List<Position> portfolio;
-            if (!opt.isEmpty()){
+            if (!opt.isEmpty()) {
                 portfolio = opt.get();
                 List<Position> existingPosition = portfolio.stream()
-                                                    .filter(holding -> holding.getTicker().equals(position.getTicker()))
-                                                    .toList();
-                
-                if (existingPosition.size() <= 0){
+                        .filter(holding -> holding.getTicker().equals(position.getTicker()))
+                        .toList();
+
+                if (existingPosition.size() <= 0) {
                     portfolio.add(position);
-                }
-                else {
+                } else {
                     Position currPosition = existingPosition.get(0);
                     addNewToExistingPosition(currPosition, position);
                 }
-            }
-            else {
+            } else {
                 portfolio = new LinkedList<>();
                 portfolio.add(position);
             }
-    
             userRepo.savePortfolio(userId, portfolio);
             return 0;
-        }
-        else {
+        } else {
             return 1;
         }
     }
 
-    public Portfolio getPortfolio(String userId){
+    public Integer updatePosition(String userId, Position position) {
+        Optional<List<Position>> opt = userRepo.getPortfolio(userId);
+
+        Optional<Position> positionValid = validatePosition(position);
+        if (!positionValid.isEmpty()) {
+            List<Position> portfolio;
+            if (!opt.isEmpty()) {
+                portfolio = opt.get();
+                portfolio = portfolio.stream()
+                        .filter(holding -> !holding.getTicker().equals(position.getTicker()))
+                        .collect(Collectors.toCollection(LinkedList::new));
+                portfolio.add(position);
+            } else {
+                portfolio = new LinkedList<>();
+                portfolio.add(position);
+            }
+            userRepo.savePortfolio(userId, portfolio);
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
+    public void deletePosition(String userId, String ticker) {
+        Optional<List<Position>> opt = userRepo.getPortfolio(userId);
+        List<Position> portfolio = opt.get();
+        portfolio = portfolio.stream()
+                .filter(position -> !position.getTicker().equals(ticker))
+                .toList();
+        userRepo.savePortfolio(userId, portfolio);
+    }
+
+    public Portfolio getPortfolio(String userId) {
         Portfolio portfolio = new Portfolio();
         Optional<List<Position>> opt = userRepo.getPortfolio(userId);
-        if (opt.isEmpty()){
+        if (opt.isEmpty()) {
             portfolio.setPositions(new LinkedList<>());
-        }
-        else {
+        } else {
             List<Position> data = opt.get();
             List<Position> positions = data.stream()
-                                        .map(position -> {
-                                            position.setLastTradedPrice(getLastTradedPrice(position.getTicker()));
-                                            position.calculateData();
-                                            return position;
-                                        })
-                                        .toList();
+                    .map(position -> {
+                        position.setLastTradedPrice(getLastTradedPrice(position.getTicker()));
+                        position.calculateData();
+                        return position;
+                    })
+                    .collect(Collectors.toCollection(LinkedList::new));
             portfolio.setPositions(positions);
         }
 
         return portfolio;
     }
 
-    public Optional<StockData> getStockData(String ticker){
+    public Optional<StockData> getStockData(String ticker) {
         Optional<StockData> opt = dataRepo.getData(ticker);
-        if (opt.isEmpty()){
+        if (opt.isEmpty()) {
             String url = UriComponentsBuilder.fromUriString(QUERY_RESOURCE)
-                            .queryParam(API_FUNCTION, FUNCTION_OVERVIEW)
-                            .queryParam(ATTR_SYMBOL, ticker)
-                            .queryParam(API_KEY, apiKey)
-                            .build()
-                            .toUriString();
-    
+                    .queryParam(API_FUNCTION, FUNCTION_OVERVIEW)
+                    .queryParam(ATTR_SYMBOL, ticker)
+                    .queryParam(API_KEY, apiKey)
+                    .build()
+                    .toUriString();
+
             RequestEntity<Void> req = RequestEntity.get(url)
-                                        .accept(MediaType.APPLICATION_JSON)
-                                        .build();
+                    .accept(MediaType.APPLICATION_JSON)
+                    .build();
             ResponseEntity<String> resp = template.exchange(req, String.class);
-    
+
             JsonReader reader = Json.createReader(new StringReader(resp.getBody()));
             JsonObject respData = reader.readObject();
-    
-            if (respData.isEmpty()){
+
+            if (respData.isEmpty()) {
                 return Optional.empty();
-            }
-            else {
+            } else {
                 dataRepo.cacheData(ticker, respData.toString());
                 return Optional.of(StockData.toStockData(respData));
             }
-        }
-        else {
+        } else {
             return opt;
         }
     }
 
-    private void addNewToExistingPosition(Position currPosition, Position newPosition){
-        Double newCostBasis = (Double.parseDouble(currPosition.getCostBasis()) * currPosition.getQuantityPurchased() + 
-                                        Double.parseDouble(newPosition.getCostBasis()) * newPosition.getQuantityPurchased()) / (currPosition.getQuantityPurchased() + newPosition.getQuantityPurchased());
+    private void addNewToExistingPosition(Position currPosition, Position newPosition) {
+        Double newCostBasis = (Double.parseDouble(currPosition.getCostBasis()) * currPosition.getQuantityPurchased() +
+                Double.parseDouble(newPosition.getCostBasis()) * newPosition.getQuantityPurchased())
+                / (currPosition.getQuantityPurchased() + newPosition.getQuantityPurchased());
         Integer newTotalQuantityPurchased = currPosition.getQuantityPurchased() + newPosition.getQuantityPurchased();
         currPosition.setCostBasis(newCostBasis.toString());
         currPosition.setQuantityPurchased(newTotalQuantityPurchased);
     }
 
-    private Optional<Position> validatePosition(Position position){
+    private Optional<Position> validatePosition(Position position) {
         String ticker = position.getTicker();
         Optional<StockData> opt = getStockData(ticker);
 
-        if (opt.isEmpty()){
+        if (opt.isEmpty()) {
             return Optional.empty();
-        }
-        else {
+        } else {
             position.setCompanyName(opt.get().getName());
             return Optional.of(position);
         }
     }
 
-    private Double getLastTradedPrice(String ticker){
-        String url = UriComponentsBuilder.fromUriString(QUERY_RESOURCE)
-                        .queryParam(API_FUNCTION, FUNCTION_QUOTE)
-                        .queryParam(ATTR_SYMBOL, ticker)
-                        .queryParam(API_KEY, apiKey)
-                        .build().toUriString();
+    private Double getLastTradedPrice(String ticker) {
+        Optional<String> opt = dataRepo.getQuoteData(ticker);
+        String data;
+        if (opt.isEmpty()) {
+            String url = UriComponentsBuilder.fromUriString(QUERY_RESOURCE)
+                    .queryParam(API_FUNCTION, FUNCTION_QUOTE)
+                    .queryParam(ATTR_SYMBOL, ticker)
+                    .queryParam(API_KEY, apiKey)
+                    .build().toUriString();
 
-        RequestEntity<Void> req = RequestEntity.get(url)
-                                    .accept(MediaType.APPLICATION_JSON)
-                                    .build();
-        ResponseEntity<String> resp = template.exchange(req, String.class);
-        JsonReader reader = Json.createReader(new StringReader(resp.getBody()));
+            RequestEntity<Void> req = RequestEntity.get(url)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .build();
+            ResponseEntity<String> resp = template.exchange(req, String.class);
+
+            data = resp.getBody();
+            dataRepo.cacheQuoteData(ticker, data);
+        } else {
+            data = opt.get();
+        }
+
+        JsonReader reader = Json.createReader(new StringReader(data));
         Double lastTradedPrice = Double.parseDouble(reader.readObject()
-                                                        .getJsonObject(ATTR_GLOBALQUOTE).getString(ATTR_LASTTRADED));
+                .getJsonObject(ATTR_GLOBALQUOTE).getString(ATTR_LASTTRADED));
 
         return lastTradedPrice;
     }

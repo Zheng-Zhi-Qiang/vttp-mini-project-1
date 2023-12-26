@@ -12,11 +12,11 @@ public class Portfolio {
     public void setPositions(List<Position> positions) {
         this.positions = positions;
     }
-    
-    public Double getNAV(){
+
+    public Double getNAV() {
         Double nav = positions.stream()
-                            .map(position -> position.getMarketValue())
-                            .reduce(0.0, (a, b) -> a + b);
+                .map(position -> position.getMarketValue())
+                .reduce(0.0, (a, b) -> a + b);
         return nav;
     }
 }

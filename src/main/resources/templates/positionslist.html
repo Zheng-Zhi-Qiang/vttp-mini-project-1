@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/css/watchlist.css">
     <link rel="stylesheet" href="/css/portfolio.css">
     <title>Portfolio</title>
@@ -53,7 +55,7 @@
         <div class="content me-5">
             <div class="content-top">
                 <b>Net Asset Value: <span data-th-text="${'$' + #numbers.formatDecimal(nav, 1, 'DEFAULT', 2, 'DEFAULT')}"></span></b>
-                <a class="btn btn-outline-dark ms-auto" data-th-href="@{/portfolio/positionForm}">New Position</a>
+                <button class="btn btn-outline-dark ms-auto" data-bs-toggle="modal" data-bs-target="#new-position">New Position</a>
             </div>
             <div data-th-if="${#lists.isEmpty(portfolio)}">
                 <p>You have not added any positions!</p>
@@ -73,18 +75,90 @@
                     </thead>
                     <tbody>
                         <tr data-th-each="position : ${portfolio}">
-                            <td><a data-th-href="@{/stock/{symbol}(symbol=${position.ticker})}" class="nav-link active" data-th-text="${position.ticker}"></a></td>
-                            <td data-th-text="${position.companyName}"></td>
-                            <td data-th-text="${position.quantityPurchased}"></td>
-                            <td data-th-text="${'$' + #numbers.formatDecimal(position.costBasis, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
-                            <td data-th-text="${'$' + #numbers.formatDecimal(position.lastTradedPrice, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
-                            <td data-th-text="${'$' + #numbers.formatDecimal(position.marketValue, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
-                            <td data-th-text="${position.unrealisedProfit}"></td>
+                            <td class="align-middle"><a data-th-href="@{/stock/{symbol}(symbol=${position.ticker})}" class="nav-link active" data-th-text="${position.ticker}"></a></td>
+                            <td class="align-middle" data-th-text="${position.companyName}"></td>
+                            <td class="align-middle" data-th-id="${position.ticker + 'qty'}" data-th-text="${position.quantityPurchased}"></td>
+                            <td class="align-middle" data-th-id="${position.ticker + 'cost'}" data-th-text="${'$' + #numbers.formatDecimal(position.costBasis, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
+                            <td class="align-middle" data-th-text="${'$' + #numbers.formatDecimal(position.lastTradedPrice, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
+                            <td class="align-middle" data-th-text="${'$' + #numbers.formatDecimal(position.marketValue, 1, 'DEFAULT', 2, 'DEFAULT')}"></td>
+                            <td class="align-middle" data-th-text="${position.unrealisedProfit}"></td>
+                            <td class="align-middle">
+                                <button class="update-btn btn btn-outline-dark me-1" data-bs-toggle="modal" data-bs-target="#update-position" 
+                                                data-th-data-ticker="${position.ticker}" data-th-data-qty="${position.quantityPurchased}" data-th-data-cost="${#numbers.formatDecimal(position.costBasis, 1, 'DEFAULT', 2, 'DEFAULT')}">Update</button>
+                                <a class="btn btn-outline-dark" data-th-href="@{/portfolio/delete/{ticker}(ticker=${position.ticker})}">Delete</a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+    <div class="modal fade" id="new-position" tabindex="-1" aria-labelledby="new-position" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="new-position-label">New Position</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="new-position-form" data-th-action="@{/portfolio/new}" method="POST" data-th-object="${new_position}">
+                    <script data-th-inline="javascript" data-th-if="${#fields.hasErrors('*')}">$(document).ready(function(){$("#new-position").modal("show");})</script>
+                    <div class="mb-3">
+                        <label for="ticker" class="form-label">Ticker</label>
+                        <input class="form-control" type="text" name="ticker" data-th-field="*{ticker}">
+                    </div>
+                    <div class="alert alert-danger" data-th-if="${#fields.hasErrors('ticker')}" data-th-errors="*{ticker}"></div>
+                    <div class="mb-3">
+                        <label for="quantityPurchased" class="form-label">Quantity Purchased</label>
+                        <input class="form-control" type="text" name="quantityPurchased" data-th-field="*{quantityPurchased}">
+                    </div>
+                    <div class="alert alert-danger" data-th-if="${#fields.hasErrors('quantityPurchased')}" data-th-errors="*{quantityPurchased}"></div>
+                    <div class="mb-3">
+                        <label for="costBasis" class="form-label">Cost Basis (per share)</label>
+                        <input class="form-control" type="text" name="costBasis" data-th-field="*{costBasis}">
+                    </div>
+                    <div class="alert alert-danger" data-th-if="${#fields.hasErrors('costBasis')}" data-th-errors="*{costBasis}"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-dark" form="new-position-form" type="submit">Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="update-position" tabindex="-1" aria-labelledby="update-position" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="update-position-form-label">Update Position</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="update-position-form" data-th-action="@{/portfolio/update}" method="POST" data-th-object="${update_position}">
+                    <script data-th-inline="javascript" data-th-if="${#fields.hasErrors('*')}">$(document).ready(function(){$("#update-position").modal("show");})</script>
+                    <div class="mb-3">
+                        <label for="ticker" class="form-label">Ticker</label>
+                        <input id="update-ticker" class="form-control" type="text" name="ticker" data-th-field="*{ticker}">
+                    </div>
+                    <div class="alert alert-danger" data-th-if="${#fields.hasErrors('ticker')}" data-th-errors="*{ticker}"></div>
+                    <div class="mb-3">
+                        <label for="quantityPurchased" class="form-label">Quantity Purchased</label>
+                        <input id="update-qty" class="form-control" type="text" name="quantityPurchased" data-th-field="*{quantityPurchased}">
+                    </div>
+                    <div class="alert alert-danger" data-th-if="${#fields.hasErrors('quantityPurchased')}" data-th-errors="*{quantityPurchased}"></div>
+                    <div class="mb-3">
+                        <label for="costBasis" class="form-label">Cost Basis (per share)</label>
+                        <input id="update-cost" class="form-control" type="text" name="costBasis" data-th-field="*{costBasis}">
+                    </div>
+                    <div class="alert alert-danger" data-th-if="${#fields.hasErrors('costBasis')}" data-th-errors="*{costBasis}"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-dark" form="update-position-form" type="submit">Update</button>
+            </div>
+          </div>
+        </div>
+      </div>
 </body>
+<script src="/js/update_position.js"></script>
 </html>
