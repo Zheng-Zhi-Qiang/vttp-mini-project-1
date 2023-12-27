@@ -3,9 +3,11 @@ package visa.vttpminiproject1.services;
 import java.io.StringReader;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,6 +24,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonReader;
 import visa.vttpminiproject1.models.News;
+import visa.vttpminiproject1.models.Position;
 import visa.vttpminiproject1.repos.StockNewsRepo;
 
 import static visa.vttpminiproject1.Utils.*;
@@ -33,6 +36,9 @@ public class StockNewsService {
 
     @Autowired
     private WatchListService watchlistService;
+
+    @Autowired
+    private PortfolioService portfolioService;
 
     @Value("${stock.api.key}")
     String stockNewsApiKey;
@@ -49,6 +55,22 @@ public class StockNewsService {
             if (ticker.equals("latest")) {
                 url = UriComponentsBuilder.fromUriString(QUERY_RESOURCE)
                         .queryParam("function", FUNCTION_NEWS)
+                        .queryParam("sort", "LATEST")
+                        .queryParam("apikey", stockNewsApiKey)
+                        .build()
+                        .toUriString();
+            } else if (ticker.equals("markets")) {
+                url = UriComponentsBuilder.fromUriString(QUERY_RESOURCE)
+                        .queryParam("function", FUNCTION_NEWS)
+                        .queryParam("topics", ATTR_MARKETNEWS)
+                        .queryParam("sort", "LATEST")
+                        .queryParam("apikey", stockNewsApiKey)
+                        .build()
+                        .toUriString();
+            } else if (ticker.equals("economy")) {
+                url = UriComponentsBuilder.fromUriString(QUERY_RESOURCE)
+                        .queryParam("function", FUNCTION_NEWS)
+                        .queryParam("topics", ATTR_ECONOMY)
                         .queryParam("sort", "LATEST")
                         .queryParam("apikey", stockNewsApiKey)
                         .build()
@@ -87,15 +109,19 @@ public class StockNewsService {
         return news;
     }
 
-    public List<News> getWatchListNews(String user) {
+    public List<News> getRelatedNews(String user) {
         List<String> watchlist = watchlistService.getWatchList(user);
-        if (watchlist.isEmpty()) {
-            return getTickerNews("latest");
+        List<Position> portfolio = portfolioService.getPortfolio(user).getPositions();
+        Set<String> relatedTickers = Stream
+                .concat(watchlist.stream(), portfolio.stream().map(position -> position.getTicker()))
+                .collect(Collectors.toCollection(HashSet::new));
+        if (relatedTickers.isEmpty()) {
+            return getTickerNews("markets");
         } else {
             List<News> watchlistNews = new LinkedList<>();
-            for (String ticker : watchlist) {
+            for (String ticker : relatedTickers) {
                 watchlistNews = Stream.concat(watchlistNews.stream(), getTickerNews(ticker).stream())
-                                    .collect(Collectors.toCollection(LinkedList::new));
+                        .collect(Collectors.toCollection(LinkedList::new));
             }
             Collections.sort(watchlistNews, Comparator.comparing(News::getDatetime));
             return watchlistNews;

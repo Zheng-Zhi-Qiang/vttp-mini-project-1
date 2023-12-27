@@ -4,6 +4,8 @@ let tab_content = document.getElementById("tab-content");
 let news_url = "/data/news"
 let financials_url = "/data/financials";
 let data = {ticker:ticker};
+let active = "News";
+let refreshTimeout = 15000;
 
 function toPercent(decimal){
     return ((decimal) * 100).toFixed(2) + '%';
@@ -25,7 +27,8 @@ function formatData(data){
     data["EPS"] = "$" + data["EPS"];
 }
 
-function getNews(e){
+function getNews(){
+    active = "News";
     fetch(news_url, {
         method: "POST",
         headers: {"Content-Type": "application/json", "Accept": "application/json"},
@@ -50,7 +53,8 @@ function getNews(e){
     })
 }
 
-function getFinancials(e){
+function getFinancials(){
+    active = "Financials";
     fetch(financials_url, {
         method: "POST",
         headers: {"Content-Type": "application/json", "Accept": "application/json"},
@@ -77,11 +81,23 @@ function getFinancials(e){
                 }
             }
         };
-        console.log(financials);
         tab_content.innerHTML = `<table>${financials}</table>`;
     })
 }
 
+function periodicRefresh(){
+    console.log("refresh");
+    if (active == "News"){
+        console.log("get");
+        getNews();
+    }
+    setTimeout(periodicRefresh, refreshTimeout)
+}
 
 news_button.addEventListener("click", getNews);
 financials_button.addEventListener("click", getFinancials)
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    setTimeout(periodicRefresh, refreshTimeout);
+});

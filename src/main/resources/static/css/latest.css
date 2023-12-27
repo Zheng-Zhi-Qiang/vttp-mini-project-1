@@ -22,3 +22,8 @@
 img {
     max-width: 100%;
 }
+
+.select_news{
+    display: flex;
+    flex-direction: row;
+}

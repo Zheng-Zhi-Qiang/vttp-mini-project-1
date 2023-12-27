@@ -88,11 +88,11 @@ public class News {
 
     public static String toJsonString(News news) {
         String jsonString = Json.createObjectBuilder()
-                .add(ATTR_TITLE, news.getTitle())
-                .add(ATTR_URL, news.getUrl())
-                .add(ATTR_NEWSIMG, news.getImg())
-                .add(ATTR_SUMMARY, news.getSummary())
-                .add(ATTR_SENTIMENT, news.getSentiment())
+                .add("title", news.getTitle())
+                .add("url", news.getUrl())
+                .add("img", news.getImg())
+                .add("summary", news.getSummary())
+                .add("sentiment", news.getSentiment())
                 .build().toString();
 
         return jsonString;

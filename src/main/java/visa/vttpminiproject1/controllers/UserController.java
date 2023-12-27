@@ -89,7 +89,7 @@ public class UserController {
         String user = (String) session.getAttribute("user");
         ModelAndView mav = new ModelAndView("home");
         mav.addObject("watchlist", watchListSvc.getWatchList(user));
-        mav.addObject("news", newsSvc.getWatchListNews(user));
+        mav.addObject("news", newsSvc.getRelatedNews(user));
         return mav;
     }
 }

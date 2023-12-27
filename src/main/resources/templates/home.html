@@ -57,7 +57,7 @@
                 <h3 class="m-0" data-th-if="${#lists.isEmpty(watchlist)}">Recent News</h3>
                 <h3 class="m-0" data-th-unless="${#lists.isEmpty(watchlist)}">Latest From Your Companies</h3>
             </div>
-            <div class="container">
+            <div id="news" class="container">
                 <div class="news_container mb-3" data-th-classappend="${#strings.toLowerCase(article.sentiment)}" data-th-each="article: ${news}">
                     <div class="img_container">
                         <img data-th-if="${#strings.equals(article.img,'')}" src="https://digitalfinger.id/wp-content/uploads/2019/12/no-image-available-icon-6.png" alt="">
@@ -74,4 +74,5 @@
         </div>
     </div>
 </body>
+<script src="/js/home.js"></script>
 </html>

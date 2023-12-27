@@ -41,18 +41,32 @@
         </div>
     </nav>
     <div class="container">
-        <div class="news_container mb-3" data-th-classappend="${#strings.toLowerCase(article.sentiment)}" data-th-each="article: ${news}">
-            <div class="img_container">
-                <img data-th-if="${#strings.equals(article.img,'')}" src="https://digitalfinger.id/wp-content/uploads/2019/12/no-image-available-icon-6.png" alt="">
-                <img data-th-unless="${#strings.equals(article.img,'')}" data-th-src="${article.img}" alt="">
+        <div class="select_news mb-2" data-th-unless="${#strings.equals(session.authenticated, 'false')}">
+            <div class="border-end">
+                <a id="general" class="btn btn-outline-dark border-0 news_button">General</a>
             </div>
-            <div class="details_container">
-                <h4 data-th-text="${article.title}"></h4>
-                <p data-th-text="${article.summary}"></p>
-                <p>Sentiment: <span data-th-text="${article.sentiment}"></span></p>
-                <a data-th-href="${article.url}">Full Article</a>
+            <div class="border-end">
+                <a id="economy" class="btn btn-outline-dark border-0 news_button">Economy</a>
+            </div>
+            <div>
+                <a id="markets" class="btn btn-outline-dark border-0 news_button">Markets</a>
+            </div>
+        </div>
+        <div id="news">
+            <div class="news_container mb-3" data-th-classappend="${#strings.toLowerCase(article.sentiment)}" data-th-each="article: ${news}">
+                <div class="img_container">
+                    <img data-th-if="${#strings.equals(article.img,'')}" src="https://digitalfinger.id/wp-content/uploads/2019/12/no-image-available-icon-6.png" alt="">
+                    <img data-th-unless="${#strings.equals(article.img,'')}" data-th-src="${article.img}" alt="">
+                </div>
+                <div class="details_container">
+                    <h4 data-th-text="${article.title}"></h4>
+                    <p data-th-text="${article.summary}"></p>
+                    <p>Sentiment: <span data-th-text="${article.sentiment}"></span></p>
+                    <a data-th-href="${article.url}">Full Article</a>
+                </div>
             </div>
         </div>
     </div>
 </body>
+<script src="/js/latest.js"></script>
 </html>

@@ -26,6 +26,8 @@ public class Utils {
     public static final String ATTR_SUMMARY = "summary";
     public static final String ATTR_SENTIMENT = "overall_sentiment_label";
     public static final String ATTR_DATETIME = "time_published";
+    public static final String ATTR_MARKETNEWS = "financial_markets";
+    public static final String ATTR_ECONOMY = "economy_macro";
 
     // Portfolio constants
     public static final String ATTR_TICKER = "ticker";
