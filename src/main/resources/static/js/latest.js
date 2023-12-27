@@ -35,7 +35,6 @@ function getNews(){
 }
 
 function periodicRefresh(){
-    console.log("refresh");
     getNews();
     setTimeout(periodicRefresh, refreshTimeout)
 }

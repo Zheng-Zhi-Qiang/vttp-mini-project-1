@@ -86,9 +86,7 @@ function getFinancials(){
 }
 
 function periodicRefresh(){
-    console.log("refresh");
     if (active == "News"){
-        console.log("get");
         getNews();
     }
     setTimeout(periodicRefresh, refreshTimeout)
