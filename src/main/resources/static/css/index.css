@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@900&display=swap');
+
+body {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(#b8d8be,#355e3b);
+    color: black;
+}
+
+.container {
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.image-text {
+    font-size: 10rem;
+    font-family: 'Roboto', sans-serif;
+    background-image: url("https://live.staticflickr.com/958/41296772825_7033f0bcb5_b.jpg");
+    background-size: cover;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.typed-line {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3rem;
+    padding: 0.5rem;
+    font-weight: bolder;
+    letter-spacing: 0.1rem;
+    text-align: center;
+    overflow: hidden;
+}
+
+.typed-text {
+    font-weight: normal;
+    color: white;
+}
+
+.cursor {
+    display: inline-block;
+    background-color: white;
+    margin-left: 0.1rem;
+    width: 3px;
+    animation: blink 1s infinite;
+}
+
+.typing {
+    animation: none;
+}
+
+@keyframes blink {
+    0%  { background-color: white; }
+    49% { background-color: white; }
+    50% { background-color: transparent; }
+    99% { background-color: transparent; }
+    100%  { background-color: white; }
+}
