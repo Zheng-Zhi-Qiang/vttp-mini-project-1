@@ -7,14 +7,18 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import visa.vttpminiproject1.Utils;
+import visa.vttpminiproject1.models.User;
 import visa.vttpminiproject1.services.StockNewsService;
 import visa.vttpminiproject1.services.UserService;
 import visa.vttpminiproject1.services.WatchListService;
@@ -35,6 +39,7 @@ public class UserController {
     @GetMapping(path = "/register")
     public ModelAndView registerForm() {
         ModelAndView mav = new ModelAndView("register");
+        mav.addObject("user", new User());
         return mav;
     }
 
@@ -44,19 +49,21 @@ public class UserController {
         return mav;
     }
 
-    @PostMapping(path = "/registerNewUser")
-    public ModelAndView createNewUser(@RequestBody MultiValueMap<String, String> data, HttpSession session) {
+    @PostMapping(path = "/register")
+    public ModelAndView createNewUser(@Valid @ModelAttribute User user, BindingResult result, HttpSession session) {
         ModelAndView mav = new ModelAndView();
-        String username = data.getFirst(ATTR_USERNAME);
-        String password = data.getFirst(ATTR_PASSWORD);
-        userSvc.createUser(username, password);
+        if (result.hasErrors()) {
+            mav.setViewName("register");
+            return mav;
+        }
+        userSvc.createUser(user);
         session.setAttribute("authenticated", "true");
-        session.setAttribute("user", username);
+        session.setAttribute("user", user.getUsername());
         mav.setViewName("redirect:/user/home");
         return mav;
     }
 
-    @PostMapping(path = "/loginUser")
+    @PostMapping(path = "/login")
     public ModelAndView loginUser(@RequestBody MultiValueMap<String, String> data, HttpSession session) {
         ModelAndView mav = new ModelAndView();
         String username = data.getFirst(ATTR_USERNAME);
@@ -90,6 +97,17 @@ public class UserController {
         ModelAndView mav = new ModelAndView("home");
         mav.addObject("watchlist", watchListSvc.getWatchList(user));
         mav.addObject("news", newsSvc.getRelatedNews(user));
+        return mav;
+    }
+
+    @GetMapping(path = "/settings")
+    public ModelAndView userSettings(HttpSession session) {
+        Optional<ModelAndView> opt = Utils.authenticated(session);
+        if (!opt.isEmpty()) {
+            return opt.get();
+        }
+        String user = (String) session.getAttribute("user");
+        ModelAndView mav = new ModelAndView("user_profile");
         return mav;
     }
 }

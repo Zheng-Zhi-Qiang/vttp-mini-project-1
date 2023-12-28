@@ -13,20 +13,31 @@
         <img src="https://img.freepik.com/free-vector/mobile-login-concept-illustration_114360-135.jpg?w=996&t=st=1703133681~exp=1703134281~hmac=03b27efa7daba4249e59829103579c1470054636fe1b4c3a7a64b888e97f9349" alt="">
         <div class="form_div">
             <h4>Register to get started!</h4>
-            <form class="mb-3" data-th-action="@{/user/registerNewUser}" method="POST">
+            <form class="mb-3" data-th-action="@{/user/register}" method="POST" data-th-object="${user}">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input class="form-control" type="email" name="email" id="email" data-th-field="*{email}">
+                    <div class="alert alert-danger" data-th-if="${#fields.hasErrors('email')}" data-th-errors="*{email}"></div>
+                </div>
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
-                    <input class="form-control" type="text" name="username" id="username">
+                    <input class="form-control" type="text" name="username" id="username" data-th-field="*{username}">
                     <div id="username_check"></div>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input class="form-control" type="password" name="password">
+                    <input id="password" class="form-control" type="password" name="password" data-th-field="*{password}">
+                    <div class="alert alert-danger" data-th-if="${#fields.hasErrors('password')}" data-th-errors="*{password}"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="confirm_password" class="form-label">Confirm Password</label>
+                    <input id="confirm_password" class="form-control" type="password" name="confirm_password">
+                    <div class="not_available" id="password_check"></div>
                 </div>
                 <button id="submit" class="btn btn-outline-dark" type="submit" disabled>Register</button>
             </form>
         </div>
     </div>
 </body>
-<script src="/js/check_username.js"></script>
+<script src="/js/register.js"></script>
 </html>

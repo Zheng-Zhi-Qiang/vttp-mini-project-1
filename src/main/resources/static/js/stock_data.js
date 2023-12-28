@@ -24,7 +24,7 @@ function formatData(data){
     data["Quarterly Earnings Growth (YOY)"] = toPercent(data["Quarterly Earnings Growth (YOY)"]);
     data["Quarterly Revenue Growth (YOY)"] = toPercent(data["Quarterly Revenue Growth (YOY)"]);
     data["Outstanding Shares"] = formatNumber(data["Outstanding Shares"]);
-    data["EPS"] = "$" + data["EPS"];
+    data["EPS"] = "$" + data["EPS"].toFixed(2);
 }
 
 function getNews(){

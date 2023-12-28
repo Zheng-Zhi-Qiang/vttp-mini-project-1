@@ -19,75 +19,79 @@ import org.springframework.stereotype.Repository;
 import jakarta.json.Json;
 import jakarta.json.JsonReader;
 import visa.vttpminiproject1.models.Position;
+import visa.vttpminiproject1.models.User;
 
 @Repository
 public class UserRepo {
-    @Autowired @Qualifier(BEAN_USERREDIS)
+    @Autowired
+    @Qualifier(BEAN_USERREDIS)
     private RedisTemplate<String, String> template;
-    
-    public Optional<List<Position>> getPortfolio(String userId){
+
+    public Optional<List<Position>> getPortfolio(String userId) {
         HashOperations<String, String, String> hashOps = template.opsForHash();
         String data = hashOps.get(userId, "portfolio");
-        if (data == null){
+        if (data == null) {
             return Optional.empty();
         }
         JsonReader reader = Json.createReader(new StringReader(data));
         List<Position> positions = reader.readArray().stream()
-                                        .map(jsonValue -> Position.toPosition(jsonValue.asJsonObject()))
-                                        .collect(Collectors.toCollection(LinkedList::new));
+                .map(jsonValue -> Position.toPosition(jsonValue.asJsonObject()))
+                .collect(Collectors.toCollection(LinkedList::new));
 
         return Optional.of(positions);
     }
 
-    public void savePortfolio(String userId, List<Position> positions){
+    public void savePortfolio(String userId, List<Position> positions) {
         HashOperations<String, String, String> hashOps = template.opsForHash();
-        if (hashOps.get(userId, "portfolio") != null){
+        if (hashOps.get(userId, "portfolio") != null) {
             hashOps.delete(userId, "portfolio");
         }
         List<String> positionsString = positions.stream()
-                                        .map(position -> Position.toJsonString(position))
-                                        .toList();
+                .map(position -> Position.toJsonString(position))
+                .toList();
 
         hashOps.put(userId, "portfolio", positionsString.toString());
     }
 
-    public Optional<Map<String,String>> getUserData(String username){
+    public Optional<Map<String, String>> getUserData(String username) {
         HashOperations<String, String, String> hashOps = template.opsForHash();
         Map<String, String> data = hashOps.entries(username);
-        if (data.isEmpty()){
+        if (data.isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(data);
     }
 
-    public void createUser(String username, String password){
+    public void createUser(User user, String apikey) {
         HashOperations<String, String, String> hashOps = template.opsForHash();
-        hashOps.put(username, ATTR_USERNAME, username);
-        hashOps.put(username, ATTR_PASSWORD, password);
+        hashOps.put(user.getUsername(), ATTR_USERNAME, user.getUsername());
+        hashOps.put(user.getUsername(), ATTR_PASSWORD, user.getPassword());
+        hashOps.put(user.getUsername(), ATTR_USEREMAIL, user.getEmail());
+        hashOps.put(user.getUsername(), ATTR_USERAPIKEY, apikey);
     }
 
-    public void saveWatchList(String userId, List<String> watchlist){
+    public void saveWatchList(String userId, List<String> watchlist) {
         HashOperations<String, String, String> hashOps = template.opsForHash();
-        if (hashOps.get(userId, "watchlist") != null){
+        if (hashOps.get(userId, "watchlist") != null) {
             hashOps.delete(userId, "watchlist");
         }
 
-        if (watchlist.size() > 0){
+        if (watchlist.size() > 0) {
             String watchlistString = watchlist.stream()
-                                        .collect(Collectors.joining(","));
+                    .collect(Collectors.joining(","));
             hashOps.put(userId, "watchlist", watchlistString);
         }
     }
 
-    public Optional<List<String>> getWatchList(String userId){
+    public Optional<List<String>> getWatchList(String userId) {
         HashOperations<String, String, String> hashOps = template.opsForHash();
         String data = hashOps.get(userId, "watchlist");
-        if (data == null){
+        if (data == null) {
             return Optional.empty();
         }
         String[] dataArray = data.split(",");
         List<String> watchlist = Arrays.stream(dataArray)
-                                        .collect(Collectors.toCollection(LinkedList::new));
+                .collect(Collectors.toCollection(LinkedList::new));
 
         return Optional.of(watchlist);
     }

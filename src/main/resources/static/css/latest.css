@@ -27,3 +27,7 @@ img {
     display: flex;
     flex-direction: row;
 }
+
+.news_header {
+    text-align: center;
+}

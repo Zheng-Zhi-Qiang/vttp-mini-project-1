@@ -12,8 +12,7 @@
 <body>
     <nav class="navbar navbar-expand-lg mb-4">
         <div class="container-fluid">
-            <p data-th-unless="${#strings.equals(session.authenticated, 'false')}" class="navbar-text mb-0 ms-3">Hello, <span data-th-text="${session.user}"></span></p>
-            <div class="placeholder"></div>
+            <p data-th-unless="${#strings.equals(session.authenticated, 'false')}" class="navbar-text mb-0 ms-3">Hello, <span><a class="nav-link active nav-item d-inline" data-th-href="@{/user/settings}" data-th-text="${session.user}"></a></span></p>
             <ul class="navbar-nav ms-auto mb-lg-0">
                 <form data-th-unless="${#strings.equals(session.authenticated, 'false')}" class="d-flex me-3" role="search" data-th-action="@{/stock/data}" method="GET">
                     <input class="form-control me-1 form-control-sm shadow-none" type="text" placeholder="Search Ticker" aria-label="Search" name="ticker">
@@ -41,6 +40,9 @@
         </div>
     </nav>
     <div class="container">
+        <div class="news_header">
+            <h2>Latest News</h2>
+        </div>
         <div class="select_news mb-2" data-th-unless="${#strings.equals(session.authenticated, 'false')}">
             <div class="border-end">
                 <a id="general" class="btn btn-outline-dark border-0 news_button">General</a>
