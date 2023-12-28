@@ -2,8 +2,10 @@ package visa.vttpminiproject1;
 
 import java.util.Optional;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.ModelAndView;
 
+import jakarta.json.Json;
 import jakarta.servlet.http.HttpSession;
 
 public class Utils {
@@ -72,6 +74,17 @@ public class Utils {
         if (authenticated == null || authenticated.equals("false")) {
             ModelAndView mav = new ModelAndView("redirect:/user/login");
             return Optional.of(mav);
+        }
+        return Optional.empty();
+    }
+
+    public static Optional<ResponseEntity<String>> authenticatedForREST(HttpSession session) {
+        String authenticated = (String) session.getAttribute("authenticated");
+        if (authenticated == null || authenticated.equals("false")) {
+            String resp = Json.createObjectBuilder()
+                    .add("error", "user is not authenticated")
+                    .build().toString();
+            return Optional.of(ResponseEntity.status(400).body(resp));
         }
         return Optional.empty();
     }
