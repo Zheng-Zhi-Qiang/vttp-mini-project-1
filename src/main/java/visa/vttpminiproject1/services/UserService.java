@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,6 +29,8 @@ public class UserService {
     String appURL;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private RandomStringGenerator generator = new RandomStringGenerator.Builder()
+            .withinRange('a', 'z').build();
 
     public Boolean usernameAvailable(String username) {
         if (userRepo.getUserData(username).isEmpty()) {
@@ -45,7 +48,7 @@ public class UserService {
         String verificationURL = "%suser/%s".formatted(appURL, verificationString);
         email.setRecipient(user.getEmail());
         email.setMessage(
-                "Hello %s!\n\nThank you for using StockSentry! Please use the URL below to perfom your email verification and first log in!\n%s \nBest Regards,\nStockSentry Team"
+                "Hello %s!\n\nThank you for using StockSentry! Please use the URL below to perfom your email verification and first log in!\n%s\n\nBest Regards,\nStockSentry Team"
                         .formatted(user.getUsername(), verificationURL));
         email.setSubject("Welcome To StockSentry");
         emailSvc.sendSimpleMail(email);
@@ -82,5 +85,23 @@ public class UserService {
             verified = true;
         }
         return verified;
+    }
+
+    public String resetPassword(String email) {
+        Optional<String> opt = userRepo.getUserUsingEmail(email);
+        if (opt.isEmpty()) {
+            return "Email not registered!";
+        }
+        String user = opt.get();
+        String randomPassword = generator.generate(10);
+        userRepo.setPassword(user, encoder.encode(randomPassword));
+        Email resetEmail = new Email();
+        resetEmail.setRecipient(email);
+        resetEmail.setMessage(
+                "Hello %s!\n\nPlease find below your new password. Do change your password once you have logged in!\nPassword: %s\n\nBest Regards,\nStockSentry Team"
+                        .formatted(user, randomPassword));
+        resetEmail.setSubject("Reset Password");
+        emailSvc.sendSimpleMail(resetEmail);
+        return "Email on password reset sent!";
     }
 }

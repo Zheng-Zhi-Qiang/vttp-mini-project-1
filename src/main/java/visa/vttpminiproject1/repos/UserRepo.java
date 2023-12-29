@@ -1,11 +1,13 @@
 package visa.vttpminiproject1.repos;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,5 +108,22 @@ public class UserRepo {
     public void deleteVerification(String user) {
         HashOperations<String, String, String> hashOps = template.opsForHash();
         hashOps.delete(user, ATTR_EMAILVERI);
+    }
+
+    public Optional<String> getUserUsingEmail(String email) {
+        Set<String> redisKeys = template.keys("*");
+        HashOperations<String, String, String> hashOps = template.opsForHash();
+        for (String key : redisKeys) {
+            if (hashOps.get(key, ATTR_USEREMAIL).equals(email)) {
+                return Optional.of(key);
+            }
+        }
+        return Optional.empty();
+    }
+
+    public void setPassword(String user, String password) {
+        HashOperations<String, String, String> hashOps = template.opsForHash();
+        hashOps.delete(user, ATTR_PASSWORD);
+        hashOps.put(user, ATTR_PASSWORD, password);
     }
 }

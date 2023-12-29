@@ -9,6 +9,35 @@
     <title>Log In</title>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg mb-4">
+        <div class="container-fluid">
+            <p data-th-unless="${#strings.equals(session.authenticated, 'false')}" class="navbar-text mb-0 ms-3">Hello, <span><a class="nav-link active nav-item d-inline" data-th-href="@{/user/settings}" data-th-text="${session.user}"></a></span></p>
+            <ul class="navbar-nav ms-auto mb-lg-0">
+                <form data-th-unless="${#strings.equals(session.authenticated, 'false')}" class="d-flex me-3" role="search" data-th-action="@{/stock/data}" method="GET">
+                    <input class="form-control me-1 form-control-sm shadow-none" type="text" placeholder="Search Ticker" aria-label="Search" name="ticker">
+                    <button class="btn btn-outline-dark" type="submit">Search</button>
+                </form>
+                <li data-th-unless="${#strings.equals(session.authenticated, 'false')}" class="nav-item">
+                    <a data-th-href="@{/user/home}" class="nav-link active">Home</a>
+                </li>
+                <li data-th-unless="${#strings.equals(session.authenticated, 'false')}" class="nav-item">
+                    <a data-th-href="@{/portfolio/positions}" class="nav-link active">Portfolio</a>
+                </li>
+                <li data-th-if="${#strings.equals(session.authenticated, 'false')}" class="nav-item">
+                    <a data-th-href="@{/}" class="nav-link active">About</a>
+                </li>
+                <li class="nav-item">
+                    <a data-th-href="@{/latest}" class="nav-link active">News</a>
+                </li>
+                <li data-th-if="${#strings.equals(session.authenticated, 'false')}" class="nav-item">
+                    <a data-th-href="@{/user/login}" class="nav-link active">Log In</a>
+                </li>
+                <li data-th-unless="${#strings.equals(session.authenticated, 'false')}" class="nav-item">
+                    <a data-th-href="@{/user/logout}" class="nav-link active">Log Out</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
     <div class="container">
         <img src="https://img.freepik.com/free-vector/tablet-login-concept-illustration_114360-7893.jpg?w=996&t=st=1703132189~exp=1703132789~hmac=2e3d8ebf032e67aacbc6fc9308329acc9ce6467b001823e5475bc847ab7a5cab" alt="">
         <div class="form_div">
@@ -19,9 +48,10 @@
                     <label for="username" class="form-label">Username</label>
                     <input id="username" class="form-control" type="text" name="username">
                 </div>
-                <div class="mb-3">
+                <div class="d-flex flex-column mb-3">
                     <label for="password" class="form-label">Password</label>
                     <input id="password" class="form-control" type="password" name="password">
+                    <a class="ms-auto" data-th-href="@{/user/reset}">Forgot password?</a>
                 </div>
                 <button id="submit" class="btn btn-outline-dark" type="submit" disabled>Login</button>
             </form>

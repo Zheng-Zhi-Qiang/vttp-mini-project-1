@@ -129,4 +129,10 @@ public class UserController {
         mav.setViewName("redirect:/user/home");
         return mav;
     }
+
+    @GetMapping(path = "/reset")
+    public ModelAndView resetForm() {
+        ModelAndView mav = new ModelAndView("reset_password");
+        return mav;
+    }
 }

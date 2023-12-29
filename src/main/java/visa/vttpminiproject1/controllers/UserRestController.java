@@ -20,28 +20,48 @@ import visa.vttpminiproject1.services.UserService;
 public class UserRestController {
     @Autowired
     private UserService userSvc;
-    
+
     @PostMapping(path = "/username", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> checkUsernameAvaliability(@RequestBody String payload){
+    public ResponseEntity<String> checkUsernameAvaliability(@RequestBody String payload) {
         JsonReader reader = Json.createReader(new StringReader(payload));
         JsonObject data = reader.readObject();
         String resp;
         try {
-            if (userSvc.usernameAvailable(data.getString("username"))){
+            if (userSvc.usernameAvailable(data.getString("username"))) {
                 resp = Json.createObjectBuilder()
                         .add("result", "Username is available!")
                         .build().toString();
-            }
-            else {
+            } else {
                 resp = Json.createObjectBuilder()
                         .add("result", "Username has been taken!")
                         .build().toString();
             }
-                    
+
             return ResponseEntity.status(200).body(resp);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(400).body("No data");
         }
+    }
+
+    @PostMapping(path = "/reset", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> resetPassword(@RequestBody String payload) {
+        JsonReader reader = Json.createReader(new StringReader(payload));
+        JsonObject data = reader.readObject();
+        // try {
+        // String email = data.getString("email");
+        // String result = userSvc.resetPassword(email);
+        // String resp = Json.createObjectBuilder()
+        // .add("result", result)
+        // .build().toString();
+        // return ResponseEntity.status(200).body(resp);
+        // } catch (Exception e) {
+        // return ResponseEntity.status(400).body("No data");
+        // }
+        String email = data.getString("email");
+        String result = userSvc.resetPassword(email);
+        String resp = Json.createObjectBuilder()
+                .add("result", result)
+                .build().toString();
+        return ResponseEntity.status(200).body(resp);
     }
 }

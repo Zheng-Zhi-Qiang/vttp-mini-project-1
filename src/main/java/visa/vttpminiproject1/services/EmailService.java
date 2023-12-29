@@ -26,10 +26,8 @@ public class EmailService {
             mailMessage.setSubject(details.getSubject());
 
             javaMailSender.send(mailMessage);
-            System.out.println("Email sent");
             return 0;
         } catch (Exception e) {
-            System.out.println("Email failed");
             return 1;
         }
     }
