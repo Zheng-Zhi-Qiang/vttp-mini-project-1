@@ -62,12 +62,13 @@ public class UserRepo {
         return Optional.of(data);
     }
 
-    public void createUser(User user, String apikey) {
+    public void createUser(User user, String apikey, String verification) {
         HashOperations<String, String, String> hashOps = template.opsForHash();
         hashOps.put(user.getUsername(), ATTR_USERNAME, user.getUsername());
         hashOps.put(user.getUsername(), ATTR_PASSWORD, user.getPassword());
         hashOps.put(user.getUsername(), ATTR_USEREMAIL, user.getEmail());
         hashOps.put(user.getUsername(), ATTR_USERAPIKEY, apikey);
+        hashOps.put(user.getUsername(), ATTR_EMAILVERI, verification);
     }
 
     public void saveWatchList(String userId, List<String> watchlist) {
@@ -94,5 +95,16 @@ public class UserRepo {
                 .collect(Collectors.toCollection(LinkedList::new));
 
         return Optional.of(watchlist);
+    }
+
+    public Optional<String> getEmailVerificationString(String user) {
+        HashOperations<String, String, String> hashOps = template.opsForHash();
+        String data = hashOps.get(user, ATTR_EMAILVERI);
+        return Optional.ofNullable(data);
+    }
+
+    public void deleteVerification(String user) {
+        HashOperations<String, String, String> hashOps = template.opsForHash();
+        hashOps.delete(user, ATTR_EMAILVERI);
     }
 }

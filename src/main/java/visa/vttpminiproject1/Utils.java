@@ -45,6 +45,7 @@ public class Utils {
     public static final String ATTR_USERAPIKEY = "apiKey";
     public static final String ATTR_PASSWORD = "password";
     public static final String ATTR_USEREMAIL = "email";
+    public static final String ATTR_EMAILVERI = "email_verification";
 
     // Stock data constants
     public static final String DATA_SYMBOL = "Symbol";

@@ -48,7 +48,7 @@ function checkUsername(e) {
 
 function checkFields(){
     if (username_input.value != "" && confirm_password_input.value != "" && password_input.value != "" && email_input.value != ""){
-        submit.disabled = false;
+        checkPassword();
     }
     else {
         submit.disabled = true;
@@ -68,6 +68,7 @@ function checkPassword(){
         }
         else {
             password_check.innerText = "";
+            submit.disabled = false;
         }
     }
 }

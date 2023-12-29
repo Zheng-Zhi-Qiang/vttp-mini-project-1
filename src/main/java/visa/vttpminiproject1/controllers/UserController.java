@@ -10,6 +10,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,9 +58,7 @@ public class UserController {
             return mav;
         }
         userSvc.createUser(user);
-        session.setAttribute("authenticated", "true");
-        session.setAttribute("user", user.getUsername());
-        mav.setViewName("redirect:/user/home");
+        mav.setViewName("registration_success");
         return mav;
     }
 
@@ -68,14 +67,18 @@ public class UserController {
         ModelAndView mav = new ModelAndView();
         String username = data.getFirst(ATTR_USERNAME);
         String password = data.getFirst(ATTR_PASSWORD);
-        if (userSvc.authenticateUser(username, password)) {
+        if (userSvc.authenticateUser(username, password) && userSvc.userVerified(username)) {
             session.setAttribute("authenticated", "true");
             session.setAttribute("user", username);
             mav.setViewName("redirect:/user/home");
             return mav;
         } else {
             mav.setViewName("login");
-            mav.addObject("error", "Invalid username or password!");
+            if (!userSvc.authenticateUser(username, password)) {
+                mav.addObject("error", "Invalid username or password!");
+            } else {
+                mav.addObject("error", "Please verify your email!");
+            }
             return mav;
         }
     }
@@ -108,6 +111,22 @@ public class UserController {
         }
         String user = (String) session.getAttribute("user");
         ModelAndView mav = new ModelAndView("user_profile");
+        return mav;
+    }
+
+    @GetMapping(path = "/{emailVerificationCode}")
+    public ModelAndView verifyEmail(@PathVariable String emailVerificationCode, HttpSession session) {
+        ModelAndView mav = new ModelAndView();
+        System.out.println(emailVerificationCode);
+        String user = emailVerificationCode.split("_")[0];
+        Integer verified = userSvc.verifyUser(user, emailVerificationCode);
+        if (!verified.equals(0)) {
+            mav.setViewName("redirect:/error");
+            return mav;
+        }
+        session.setAttribute("authenticated", "true");
+        session.setAttribute("user", user);
+        mav.setViewName("redirect:/user/home");
         return mav;
     }
 }
