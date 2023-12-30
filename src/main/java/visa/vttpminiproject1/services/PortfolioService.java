@@ -18,6 +18,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import visa.vttpminiproject1.models.Portfolio;
@@ -197,5 +199,40 @@ public class PortfolioService {
                 .getJsonObject(ATTR_GLOBALQUOTE).getString(ATTR_LASTTRADED));
 
         return lastTradedPrice;
+    }
+
+    public JsonArray getStockEarnings(String ticker) {
+        Optional<String> opt = dataRepo.getEarningsData(ticker);
+        String data;
+        if (opt.isEmpty()) {
+            String url = UriComponentsBuilder.fromUriString(QUERY_RESOURCE)
+                    .queryParam(API_FUNCTION, FUNCTION_EARNINGS)
+                    .queryParam(ATTR_SYMBOL, ticker)
+                    .queryParam(API_KEY, apiKey)
+                    .build()
+                    .toUriString();
+
+            RequestEntity<Void> req = RequestEntity.get(url)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .build();
+            ResponseEntity<String> resp = template.exchange(req, String.class);
+            data = resp.getBody();
+        } else {
+            data = opt.get();
+        }
+        JsonReader reader = Json.createReader(new StringReader(data));
+        JsonObject respData = reader.readObject();
+        JsonArrayBuilder array = Json.createArrayBuilder();
+        respData.getJsonArray("quarterlyEarnings").stream()
+                .forEach(jsonValue -> {
+                    JsonArray quarterArray = Json.createArrayBuilder()
+                            .add(jsonValue.asJsonObject().get("fiscalDateEnding"))
+                            .add(jsonValue.asJsonObject().get("estimatedEPS"))
+                            .add(jsonValue.asJsonObject().get("reportedEPS"))
+                            .build();
+                    array.add(quarterArray);
+                });
+
+        return array.build();
     }
 }

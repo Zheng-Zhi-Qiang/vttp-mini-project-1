@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import jakarta.servlet.http.HttpSession;
@@ -66,5 +68,40 @@ public class StockDataRestController {
         String ticker = data.getString("ticker").toUpperCase();
         StockData stockData = portfolioSvc.getStockData(ticker).get();
         return ResponseEntity.status(200).body(StockData.toJsonString(stockData));
+    }
+
+    @PostMapping(path = "/earnings", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getTickerEarnings(@RequestBody String payload, HttpSession session) {
+        Optional<ResponseEntity<String>> authentication = Utils.authenticatedForREST(session);
+        if (!authentication.isEmpty()) {
+            return authentication.get();
+        }
+        JsonReader reader = Json.createReader(new StringReader(payload));
+        JsonObject data = reader.readObject();
+        String ticker = data.getString("ticker").toUpperCase();
+        JsonArray allEarnings = portfolioSvc.getStockEarnings(ticker);
+        String resp;
+        if (allEarnings.isEmpty()) {
+            resp = Json.createObjectBuilder()
+                    .add("result", "No available earnings data")
+                    .build().toString();
+        } else {
+            if (allEarnings.size() < 8) {
+                resp = Json.createObjectBuilder()
+                        .add("result", "success")
+                        .add("data", allEarnings)
+                        .build().toString();
+            } else {
+                JsonArrayBuilder earnings = Json.createArrayBuilder();
+                for (int i = 0; i < 8; i++) {
+                    earnings.add(allEarnings.get(i));
+                }
+                resp = Json.createObjectBuilder()
+                        .add("result", "success")
+                        .add("data", earnings.build())
+                        .build().toString();
+            }
+        }
+        return ResponseEntity.status(200).body(resp);
     }
 }

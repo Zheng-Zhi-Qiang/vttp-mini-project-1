@@ -118,7 +118,6 @@ public class UserController {
     @GetMapping(path = "/{emailVerificationCode}")
     public ModelAndView verifyEmail(@PathVariable String emailVerificationCode, HttpSession session) {
         ModelAndView mav = new ModelAndView();
-        System.out.println(emailVerificationCode);
         String user = emailVerificationCode.split("_")[0];
         Integer verified = userSvc.verifyUser(user, emailVerificationCode);
         if (!verified.equals(0)) {
@@ -144,6 +143,18 @@ public class UserController {
             return opt.get();
         }
         ModelAndView mav = new ModelAndView("change_password");
+        return mav;
+    }
+
+    @GetMapping(path = "/api")
+    public ModelAndView exportDetails(HttpSession session) {
+        Optional<ModelAndView> opt = Utils.authenticated(session);
+        if (!opt.isEmpty()) {
+            return opt.get();
+        }
+        String user = (String) session.getAttribute("user");
+        ModelAndView mav = new ModelAndView("api");
+        mav.addObject("apiKey", userSvc.getUserAPIKey(user));
         return mav;
     }
 }

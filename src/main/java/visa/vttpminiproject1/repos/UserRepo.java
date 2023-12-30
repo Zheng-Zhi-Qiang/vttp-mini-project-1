@@ -1,7 +1,6 @@
 package visa.vttpminiproject1.repos;
 
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -121,6 +120,17 @@ public class UserRepo {
         return Optional.empty();
     }
 
+    public Optional<String> getUserUsingAPIKey(String apikey) {
+        Set<String> redisKeys = template.keys("*");
+        HashOperations<String, String, String> hashOps = template.opsForHash();
+        for (String key : redisKeys) {
+            if (hashOps.get(key, ATTR_USERAPIKEY).equals(apikey)) {
+                return Optional.of(key);
+            }
+        }
+        return Optional.empty();
+    }
+
     public void setPassword(String user, String password) {
         HashOperations<String, String, String> hashOps = template.opsForHash();
         hashOps.delete(user, ATTR_PASSWORD);
@@ -136,5 +146,10 @@ public class UserRepo {
     public String getEmail(String user) {
         HashOperations<String, String, String> hashOps = template.opsForHash();
         return hashOps.get(user, ATTR_USEREMAIL);
+    }
+
+    public String getUserAPIKey(String user) {
+        HashOperations<String, String, String> hashOps = template.opsForHash();
+        return hashOps.get(user, ATTR_USERAPIKEY);
     }
 }

@@ -1,8 +1,12 @@
+google.charts.load('current', {'packages':['corechart']});
+
 let news_button = document.getElementById("news");
 let financials_button = document.getElementById("financials");
+let earnings_button = document.getElementById("earnings")
 let tab_content = document.getElementById("tab-content");
 let news_url = "/data/news"
 let financials_url = "/data/financials";
+let earnings_url = "/data/earnings";
 let data = {ticker:ticker};
 let active = "News";
 let refreshTimeout = 15000;
@@ -92,10 +96,48 @@ function periodicRefresh(){
     setTimeout(periodicRefresh, refreshTimeout)
 }
 
+
+
+function drawChart() {
+    active = "Earnings";
+    fetch(earnings_url, {
+        method: "POST",
+        headers: {"Content-Type": "application/json", "Accept": "application/json"},
+        body: JSON.stringify(data)
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        if (!data.result.includes("success")){
+            tab_content.innerText = data.result;
+        }
+        else {
+            let dataArray = data.data;
+            dataArray.forEach(array => {
+                array[1] = parseFloat(array[1]);
+                array[2] = parseFloat(array[2]);
+            });
+            finalArray = [['Fiscal Quarter Ending', 'Expected Earnings', 'Reported Earnings'], ...dataArray.reverse()];
+            var data = google.visualization.arrayToDataTable(finalArray);
+        
+            var options = {
+                hAxis: {title: 'Fiscal Quarter Ending'},
+                animation: {startup: true, easing:'in'},
+                legend: 'automatic'
+            };
+        
+            var chart = new google.visualization.ScatterChart(tab_content);
+        
+            chart.draw(data, options);
+        }
+    })
+}
+
 news_button.addEventListener("click", getNews);
-financials_button.addEventListener("click", getFinancials)
+financials_button.addEventListener("click", getFinancials);
+earnings_button.addEventListener("click", drawChart);
 
 
 document.addEventListener("DOMContentLoaded", function() {
     setTimeout(periodicRefresh, refreshTimeout);
 });
+

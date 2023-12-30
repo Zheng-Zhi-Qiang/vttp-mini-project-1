@@ -114,6 +114,16 @@ public class Position {
         return jsonString;
     }
 
+    public static JsonObject toJsonObject(Position position) {
+        JsonObject object = Json.createObjectBuilder()
+                .add("Ticker", position.getTicker())
+                .add("Company", position.getCompanyName())
+                .add("Quantity Held", position.getQuantityPurchased())
+                .add("Cost Basis", position.getCostBasis())
+                .build();
+        return object;
+    }
+
     public void calculateData() {
         marketValue = lastTradedPrice * quantityPurchased;
         Double profit = marketValue - (Double.parseDouble(costBasis) * quantityPurchased);

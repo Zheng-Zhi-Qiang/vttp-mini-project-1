@@ -31,146 +31,190 @@ public class StockData {
     private Double priceToBook;
     private Double beta;
     private Long sharesOutstanding;
+
     public String getTicker() {
         return ticker;
     }
+
     public void setTicker(String ticker) {
         this.ticker = ticker;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public String getDescription() {
         return description;
     }
+
     public void setDescription(String description) {
         this.description = description;
     }
+
     public String getCountry() {
         return country;
     }
+
     public void setCountry(String country) {
         this.country = country;
     }
+
     public String getSector() {
         return sector;
     }
+
     public void setSector(String sector) {
         this.sector = sector;
     }
+
     public String getIndustry() {
         return industry;
     }
+
     public void setIndustry(String industry) {
         this.industry = industry;
     }
+
     public Long getMarketCap() {
         return marketCap;
     }
+
     public void setMarketCap(Long marketCap) {
         this.marketCap = marketCap;
     }
+
     public Long getEbitda() {
         return ebitda;
     }
+
     public void setEbitda(Long ebitda) {
         this.ebitda = ebitda;
     }
+
     public Double getPe() {
         return pe;
     }
+
     public void setPe(Double pe) {
         this.pe = pe;
     }
+
     public Double getPeg() {
         return peg;
     }
+
     public void setPeg(Double peg) {
         this.peg = peg;
     }
+
     public Double getBookValue() {
         return bookValue;
     }
+
     public void setBookValue(Double bookValue) {
         this.bookValue = bookValue;
     }
+
     public Double getDividendYield() {
         return dividendYield;
     }
+
     public void setDividendYield(Double dividendYield) {
         this.dividendYield = dividendYield;
     }
+
     public Double getEps() {
         return eps;
     }
+
     public void setEps(Double eps) {
         this.eps = eps;
     }
+
     public Double getProfitMargin() {
         return profitMargin;
     }
+
     public void setProfitMargin(Double profitMargin) {
         this.profitMargin = profitMargin;
     }
+
     public Double getOperatingMargin() {
         return operatingMargin;
     }
+
     public void setOperatingMargin(Double operatingMargin) {
         this.operatingMargin = operatingMargin;
     }
+
     public Double getQtrEarningsGrowthYOY() {
         return qtrEarningsGrowthYOY;
     }
+
     public void setQtrEarningsGrowthYOY(Double qtrEarningsGrowthYOY) {
         this.qtrEarningsGrowthYOY = qtrEarningsGrowthYOY;
     }
+
     public Double getQtrRevenueGrowthYOY() {
         return qtrRevenueGrowthYOY;
     }
+
     public void setQtrRevenueGrowthYOY(Double qtrRevenueGrowthYOY) {
         this.qtrRevenueGrowthYOY = qtrRevenueGrowthYOY;
     }
+
     public Double getForwardpe() {
         return forwardpe;
     }
+
     public void setForwardpe(Double forwardpe) {
         this.forwardpe = forwardpe;
     }
+
     public Double getPriceToSales() {
         return priceToSales;
     }
+
     public void setPriceToSales(Double priceToSales) {
         this.priceToSales = priceToSales;
     }
+
     public Double getPriceToBook() {
         return priceToBook;
     }
+
     public void setPriceToBook(Double priceToBook) {
         this.priceToBook = priceToBook;
     }
+
     public Double getBeta() {
         return beta;
     }
+
     public void setBeta(Double beta) {
         this.beta = beta;
     }
+
     public Long getSharesOutstanding() {
         return sharesOutstanding;
     }
+
     public void setSharesOutstanding(Long sharesOutstanding) {
         this.sharesOutstanding = sharesOutstanding;
     }
 
-    public static StockData toStockData(String data){
+    public static StockData toStockData(String data) {
         JsonReader reader = Json.createReader(new StringReader(data));
         JsonObject obj = reader.readObject();
         return toStockData(obj);
     }
-    
-    public static StockData toStockData(JsonObject data){
+
+    public static StockData toStockData(JsonObject data) {
         StockData stockData = new StockData();
         stockData.setTicker(data.getString(DATA_SYMBOL));
         stockData.setName(data.getString(DATA_NAME));
@@ -178,44 +222,78 @@ public class StockData {
         stockData.setCountry(data.getString(DATA_COUNTRY));
         stockData.setSector(data.getString(DATA_SECTOR));
         stockData.setIndustry(data.getString(DATA_INDUSTRY));
-        stockData.setMarketCap(Long.parseLong(data.getString(DATA_MARKETCAP)));
-        stockData.setEbitda(Long.parseLong(data.getString(DATA_EBITDA)));
-        stockData.setPe(Double.parseDouble(data.getString(DATA_PE)));
-        stockData.setPeg(Double.parseDouble(data.getString(DATA_PEG)));
-        stockData.setBookValue(Double.parseDouble(data.getString(DATA_BV)));
-        stockData.setDividendYield(Double.parseDouble(data.getString(DATA_DIVYIELD)));
-        stockData.setEps(Double.parseDouble(data.getString(DATA_EPS)));
-        stockData.setProfitMargin(Double.parseDouble(data.getString(DATA_PROFITMARGIN)));
-        stockData.setOperatingMargin(Double.parseDouble(data.getString(DATA_OPERATINGMARGIN)));
-        stockData.setQtrEarningsGrowthYOY(Double.parseDouble(data.getString(DATA_QTREARNINGS_YOY)));
-        stockData.setQtrRevenueGrowthYOY(Double.parseDouble(data.getString(DATA_QTRREVENUE_YOY)));
-        stockData.setForwardpe(Double.parseDouble(data.getString(DATA_FORWARDPE)));
-        stockData.setPriceToSales(Double.parseDouble(data.getString(DATA_PRICETOSALES)));
-        stockData.setPriceToBook(Double.parseDouble(data.getString(DATA_PRICETOBOOK)));
-        stockData.setBeta(Double.parseDouble(data.getString(DATA_BETA)));
-        stockData.setSharesOutstanding(Long.parseLong(data.getString(DATA_OUTSTANDINGSHARES)));
+        stockData.setMarketCap(Long.parseLong(
+                data.getString(DATA_MARKETCAP).equals("None") || data.getString(DATA_MARKETCAP).equals("-") ? "0"
+                        : data.getString(DATA_MARKETCAP)));
+        stockData.setEbitda(Long
+                .parseLong(data.getString(DATA_EBITDA).equals("None") || data.getString(DATA_EBITDA).equals("-") ? "0"
+                        : data.getString(DATA_EBITDA)));
+        stockData.setPe(
+                Double.parseDouble(data.getString(DATA_PE).equals("None") || data.getString(DATA_PE).equals("-") ? "0"
+                        : data.getString(DATA_PE)));
+        stockData.setPeg(
+                Double.parseDouble(data.getString(DATA_PEG).equals("None") || data.getString(DATA_PEG).equals("-") ? "0"
+                        : data.getString(DATA_PEG)));
+        stockData.setBookValue(
+                Double.parseDouble(data.getString(DATA_BV).equals("None") || data.getString(DATA_BV).equals("-") ? "0"
+                        : data.getString(DATA_BV)));
+        stockData.setDividendYield(Double.parseDouble(
+                data.getString(DATA_DIVYIELD).equals("None") || data.getString(DATA_DIVYIELD).equals("-") ? "0"
+                        : data.getString(DATA_DIVYIELD)));
+        stockData.setEps(
+                Double.parseDouble(data.getString(DATA_EPS).equals("None") || data.getString(DATA_EPS).equals("-") ? "0"
+                        : data.getString(DATA_EPS)));
+        stockData.setProfitMargin(Double.parseDouble(
+                data.getString(DATA_PROFITMARGIN).equals("None") || data.getString(DATA_PROFITMARGIN).equals("-") ? "0"
+                        : data.getString(DATA_PROFITMARGIN)));
+        stockData.setOperatingMargin(Double.parseDouble(
+                data.getString(DATA_OPERATINGMARGIN).equals("None") || data.getString(DATA_OPERATINGMARGIN).equals("-")
+                        ? "0"
+                        : data.getString(DATA_OPERATINGMARGIN)));
+        stockData.setQtrEarningsGrowthYOY(Double.parseDouble(
+                data.getString(DATA_QTREARNINGS_YOY).equals("None") || data.getString(DATA_QTREARNINGS_YOY).equals("-")
+                        ? "0"
+                        : data.getString(DATA_QTREARNINGS_YOY)));
+        stockData.setQtrRevenueGrowthYOY(Double.parseDouble(
+                data.getString(DATA_QTRREVENUE_YOY).equals("None") || data.getString(DATA_QTRREVENUE_YOY).equals("-")
+                        ? "0"
+                        : data.getString(DATA_QTRREVENUE_YOY)));
+        stockData.setForwardpe(Double.parseDouble(
+                data.getString(DATA_FORWARDPE).equals("None") || data.getString(DATA_FORWARDPE).equals("-") ? "0"
+                        : data.getString(DATA_FORWARDPE)));
+        stockData.setPriceToSales(Double.parseDouble(
+                data.getString(DATA_PRICETOSALES).equals("None") || data.getString(DATA_PRICETOSALES).equals("-") ? "0"
+                        : data.getString(DATA_PRICETOSALES)));
+        stockData.setPriceToBook(Double.parseDouble(
+                data.getString(DATA_PRICETOBOOK).equals("None") || data.getString(DATA_PRICETOBOOK).equals("-") ? "0"
+                        : data.getString(DATA_PRICETOBOOK)));
+        stockData.setBeta(Double
+                .parseDouble(data.getString(DATA_BETA).equals("None") || data.getString(DATA_BETA).equals("-") ? "0"
+                        : data.getString(DATA_BETA)));
+        stockData.setSharesOutstanding(Long.parseLong(data.getString(DATA_OUTSTANDINGSHARES).equals("None")
+                || data.getString(DATA_OUTSTANDINGSHARES).equals("-") ? "0" : data.getString(DATA_OUTSTANDINGSHARES)));
         return stockData;
     }
 
-    public static String toJsonString(StockData data){
+    public static String toJsonString(StockData data) {
         String stringData = Json.createObjectBuilder()
-                                .add("Market Capitalization", data.getMarketCap())
-                                .add("EBITDA", data.getEbitda())
-                                .add("PE Ratio", data.getPe())
-                                .add("PEG Ratio", data.getPeg())
-                                .add("Book Value", data.getBookValue())
-                                .add("Dividend Yield", data.getDividendYield())
-                                .add("EPS", data.getEps())
-                                .add("Profit Margin", data.getProfitMargin())
-                                .add("Operating Margin", data.getOperatingMargin())
-                                .add("Quarterly Earnings Growth (YOY)", data.getQtrEarningsGrowthYOY())
-                                .add("Quarterly Revenue Growth (YOY)", data.getQtrRevenueGrowthYOY())
-                                .add("Forward PE Ratio", data.getForwardpe())
-                                .add("Price-To-Sales Ratio", data.getPriceToSales())
-                                .add("Price-To-Book Ratio", data.getPriceToBook())
-                                .add("Beta Value", data.getBeta())
-                                .add("Outstanding Shares", data.getSharesOutstanding())
-                                .build().toString();
+                .add("Market Capitalization", data.getMarketCap())
+                .add("EBITDA", data.getEbitda())
+                .add("PE Ratio", data.getPe())
+                .add("PEG Ratio", data.getPeg())
+                .add("Book Value", data.getBookValue())
+                .add("Dividend Yield", data.getDividendYield())
+                .add("EPS", data.getEps())
+                .add("Profit Margin", data.getProfitMargin())
+                .add("Operating Margin", data.getOperatingMargin())
+                .add("Quarterly Earnings Growth (YOY)", data.getQtrEarningsGrowthYOY())
+                .add("Quarterly Revenue Growth (YOY)", data.getQtrRevenueGrowthYOY())
+                .add("Forward PE Ratio", data.getForwardpe())
+                .add("Price-To-Sales Ratio", data.getPriceToSales())
+                .add("Price-To-Book Ratio", data.getPriceToBook())
+                .add("Beta Value", data.getBeta())
+                .add("Outstanding Shares", data.getSharesOutstanding())
+                .build().toString();
 
         return stringData;
     }

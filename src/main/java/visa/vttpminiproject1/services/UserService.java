@@ -2,6 +2,7 @@ package visa.vttpminiproject1.services;
 
 import static visa.vttpminiproject1.Utils.ATTR_PASSWORD;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,7 +13,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
 import visa.vttpminiproject1.models.Email;
+import visa.vttpminiproject1.models.Portfolio;
 import visa.vttpminiproject1.models.User;
 import visa.vttpminiproject1.repos.UserRepo;
 
@@ -24,6 +30,12 @@ public class UserService {
 
     @Autowired
     private EmailService emailSvc;
+
+    @Autowired
+    private WatchListService watchListService;
+
+    @Autowired
+    private PortfolioService portfolioService;
 
     @Value("${app.url}")
     String appURL;
@@ -122,5 +134,28 @@ public class UserService {
             return "Password changed successfully!";
         }
         return "Current password entered is incorrect!";
+    }
+
+    public Optional<jakarta.json.JsonObject> getUserData(String apiKey) {
+        Optional<String> opt = userRepo.getUserUsingAPIKey(apiKey);
+        if (opt.isEmpty()) {
+            return Optional.empty();
+        }
+        String user = opt.get();
+        Portfolio portfolio = portfolioService.getPortfolio(user);
+        List<String> watchlist = watchListService.getWatchList(user);
+        JsonArrayBuilder watchlistArrayBuilder = Json.createArrayBuilder();
+        watchlist.stream().forEach(ticker -> watchlistArrayBuilder.add(ticker));
+        JsonArray positions = Portfolio.toJsonArray(portfolio);
+
+        JsonObject profile = Json.createObjectBuilder()
+                .add("watchlist", watchlistArrayBuilder.build())
+                .add("portfolio", positions)
+                .build();
+        return Optional.of(profile);
+    }
+
+    public String getUserAPIKey(String user){
+        return userRepo.getUserAPIKey(user);
     }
 }

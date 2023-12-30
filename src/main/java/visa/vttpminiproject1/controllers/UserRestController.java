@@ -1,11 +1,14 @@
 package visa.vttpminiproject1.controllers;
 
+import static visa.vttpminiproject1.Utils.ATTR_USERAPIKEY;
+
 import java.io.StringReader;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
 import jakarta.servlet.http.HttpSession;
 import visa.vttpminiproject1.Utils;
@@ -92,5 +96,25 @@ public class UserRestController {
                 .add("result", result)
                 .build().toString();
         return ResponseEntity.status(200).body(resp);
+    }
+
+    @GetMapping(path = "/api", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> exportProfileData(@RequestBody String payload, HttpSession session) {
+        JsonReader reader = Json.createReader(new StringReader(payload));
+        JsonObject data = reader.readObject();
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        try {
+            String apiKey = data.getString(ATTR_USERAPIKEY);
+            Optional<JsonObject> opt = userSvc.getUserData(apiKey);
+            if (opt.isEmpty()) {
+                builder.add("result", "Invalid API Key provided!");
+            } else {
+                builder.add("result", opt.get());
+            }
+            return ResponseEntity.status(200).body(builder.build().toString());
+        } catch (Exception e) {
+            builder.add("result", "Please provide a valid API key in the body!");
+            return ResponseEntity.status(400).body(builder.build().toString());
+        }
     }
 }

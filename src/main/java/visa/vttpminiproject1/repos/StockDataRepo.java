@@ -44,4 +44,14 @@ public class StockDataRepo {
         return Optional.ofNullable(data);
     }
 
+    public void cacheEarningsData(String ticker, String data) {
+        ValueOperations<String, String> valueOps = template.opsForValue();
+        valueOps.append("%s-earnings".formatted(ticker), data);
+    }
+
+    public Optional<String> getEarningsData(String ticker) {
+        ValueOperations<String, String> valueOps = template.opsForValue();
+        String data = valueOps.get("%s-earnings".formatted(ticker));
+        return Optional.ofNullable(data);
+    }
 }
