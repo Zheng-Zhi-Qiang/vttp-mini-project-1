@@ -104,4 +104,23 @@ public class UserService {
         emailSvc.sendSimpleMail(resetEmail);
         return "Email on password reset sent!";
     }
+
+    public User getUserDetails(String user) {
+        User userDetails = new User();
+        userDetails.setUsername(user);
+        userDetails.setEmail(userRepo.getEmail(user));
+        return userDetails;
+    }
+
+    public void changeEmail(String user, String email) {
+        userRepo.setEmail(user, email);
+    }
+
+    public String changePassword(String user, String oldPassword, String newPassword) {
+        if (authenticateUser(user, oldPassword)) {
+            userRepo.setPassword(user, encoder.encode(newPassword));
+            return "Password changed successfully!";
+        }
+        return "Current password entered is incorrect!";
+    }
 }

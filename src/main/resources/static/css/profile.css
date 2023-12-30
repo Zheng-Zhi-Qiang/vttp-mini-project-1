@@ -3,9 +3,15 @@
 }
 
 .settings-nav {
-    width: 15vw;
+    width: 10vw;
 }
 
 .nav-content {
     width: 60vw;
+}
+
+
+img {
+    max-width: 1rem;
+    max-height: 1rem;
 }

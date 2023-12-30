@@ -111,6 +111,7 @@ public class UserController {
         }
         String user = (String) session.getAttribute("user");
         ModelAndView mav = new ModelAndView("user_profile");
+        mav.addObject("user", userSvc.getUserDetails(user));
         return mav;
     }
 
@@ -133,6 +134,16 @@ public class UserController {
     @GetMapping(path = "/reset")
     public ModelAndView resetForm() {
         ModelAndView mav = new ModelAndView("reset_password");
+        return mav;
+    }
+
+    @GetMapping(path = "/password")
+    public ModelAndView changePasswordForm(HttpSession session) {
+        Optional<ModelAndView> opt = Utils.authenticated(session);
+        if (!opt.isEmpty()) {
+            return opt.get();
+        }
+        ModelAndView mav = new ModelAndView("change_password");
         return mav;
     }
 }

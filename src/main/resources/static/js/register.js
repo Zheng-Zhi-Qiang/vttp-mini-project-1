@@ -60,8 +60,6 @@ function checkPassword(){
         password_check.innerText = "";
     }
     else {
-        console.log(confirm_password_input.value);
-        console.log(password_input.value);
         if (confirm_password_input.value != password_input.value){
             password_check.innerText = "Password does not match!";
             submit.disabled = true;

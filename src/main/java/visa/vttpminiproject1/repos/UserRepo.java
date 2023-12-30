@@ -126,4 +126,15 @@ public class UserRepo {
         hashOps.delete(user, ATTR_PASSWORD);
         hashOps.put(user, ATTR_PASSWORD, password);
     }
+
+    public void setEmail(String user, String email) {
+        HashOperations<String, String, String> hashOps = template.opsForHash();
+        hashOps.delete(user, ATTR_USEREMAIL);
+        hashOps.put(user, ATTR_USEREMAIL, email);
+    }
+
+    public String getEmail(String user) {
+        HashOperations<String, String, String> hashOps = template.opsForHash();
+        return hashOps.get(user, ATTR_USEREMAIL);
+    }
 }

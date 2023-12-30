@@ -17,11 +17,3 @@ img {
     min-width: 35%;
     
 }
-
-.available {
-    color: green;
-}
-
-.not_available {
-    color: red;
-}
