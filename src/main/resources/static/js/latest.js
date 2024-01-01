@@ -2,7 +2,7 @@ let active = "General"
 let news_container = document.getElementById("news");
 let news_buttons = document.querySelectorAll(".news_button");
 let url = "/news"
-const refreshTimeout = 60000;
+const refreshTimeout = 25000;
 
 function getNews(){
     data = {

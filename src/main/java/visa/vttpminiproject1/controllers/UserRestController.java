@@ -76,8 +76,11 @@ public class UserRestController {
         JsonReader reader = Json.createReader(new StringReader(payload));
         JsonObject data = reader.readObject();
         String email = data.getString("email");
-        userSvc.changeEmail(user, email);
-        return ResponseEntity.status(200).body("Success");
+        String result = userSvc.changeEmail(user, email);
+        String resp = Json.createObjectBuilder()
+                .add("result", result)
+                .build().toString();
+        return ResponseEntity.status(200).body(resp);
     }
 
     @PostMapping(path = "/changePassword", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

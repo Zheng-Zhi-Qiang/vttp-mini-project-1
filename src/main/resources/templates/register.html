@@ -43,10 +43,11 @@
         <img src="https://img.freepik.com/free-vector/mobile-login-concept-illustration_114360-135.jpg?w=996&t=st=1703133681~exp=1703134281~hmac=03b27efa7daba4249e59829103579c1470054636fe1b4c3a7a64b888e97f9349" alt="">
         <div class="form_div">
             <h4>Register to get started!</h4>
+            <div class="alert alert-danger" data-th-if="${error != null}" data-th-text="${error}"></div>
             <form class="mb-3" data-th-action="@{/user/register}" method="POST" data-th-object="${user}">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input class="form-control" type="email" name="email" id="email" data-th-field="*{email}">
+                    <input class="form-control" type="text" name="email" id="email" data-th-field="*{email}">
                     <div class="alert alert-danger" data-th-if="${#fields.hasErrors('email')}" data-th-errors="*{email}"></div>
                 </div>
                 <div class="mb-3">

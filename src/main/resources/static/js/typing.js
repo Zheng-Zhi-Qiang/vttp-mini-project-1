@@ -2,7 +2,7 @@ const typedText = document.querySelector(".typed-text");
 const cursor = document.querySelector(".cursor");
 
 const textArray = ["get the latest news", "analyze stock financials", "track your portfolio"];
-const typingDelay = 200;
+const typingDelay = 100;
 const erasingDelay = 100;
 const newTextDelay = 2000;
 let textArrayIndex = 0;

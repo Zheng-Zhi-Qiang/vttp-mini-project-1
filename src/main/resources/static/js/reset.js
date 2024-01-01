@@ -22,6 +22,7 @@ function resetPassword(){
         }
         else {
             error_div.innerHTML = `<p class="ms-2 mb-0">${result}</p>`
+            setTimeout(()=> {error_div.innerHTML = "";}, 5000);
         }
     })
 }

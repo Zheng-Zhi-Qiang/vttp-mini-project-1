@@ -124,8 +124,13 @@ public class UserService {
         return userDetails;
     }
 
-    public void changeEmail(String user, String email) {
-        userRepo.setEmail(user, email);
+    public String changeEmail(String user, String email) {
+        if (email.matches("^.+@.+\\.[a-zA-Z]+$")) {
+            userRepo.setEmail(user, email);
+            return "success";
+        } else {
+            return "Invalid email";
+        }
     }
 
     public String changePassword(String user, String oldPassword, String newPassword) {
@@ -155,7 +160,15 @@ public class UserService {
         return Optional.of(profile);
     }
 
-    public String getUserAPIKey(String user){
+    public String getUserAPIKey(String user) {
         return userRepo.getUserAPIKey(user);
+    }
+
+    public Boolean accountWithEmailExists(String email) {
+        Optional<String> opt = userRepo.getUserUsingEmail(email);
+        if (!opt.isEmpty()) {
+            return true;
+        }
+        return false;
     }
 }

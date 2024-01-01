@@ -1,6 +1,6 @@
 let news_container = document.getElementById("news");
 let url = "/news"
-const refreshTimeout = 15000;
+const refreshTimeout = 25000;
 
 function getNews(){
     data = {

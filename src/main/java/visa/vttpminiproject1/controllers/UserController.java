@@ -57,6 +57,12 @@ public class UserController {
             mav.setViewName("register");
             return mav;
         }
+
+        if (userSvc.accountWithEmailExists(user.getEmail())) {
+            mav.setViewName("register");
+            mav.addObject("error", "Account with email exists. Please login with registered account.");
+            return mav;
+        }
         userSvc.createUser(user);
         mav.setViewName("registration_success");
         return mav;

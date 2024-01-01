@@ -2,6 +2,7 @@ package visa.vttpminiproject1.repos;
 
 import static visa.vttpminiproject1.Utils.BEAN_TICKERREDIS;
 
+import java.time.Duration;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,11 @@ public class StockDataRepo {
     @Qualifier(BEAN_TICKERREDIS)
     private RedisTemplate<String, String> template;
 
+    private Long cacheDuration = 3L;
+
     public void cacheData(String ticker, String data) {
         ValueOperations<String, String> valueOps = template.opsForValue();
-        valueOps.append(ticker, data);
+        valueOps.set(ticker, data, Duration.ofHours(cacheDuration));
     }
 
     public Optional<StockData> getData(String ticker) {
@@ -35,7 +38,7 @@ public class StockDataRepo {
 
     public void cacheQuoteData(String ticker, String data) {
         ValueOperations<String, String> valueOps = template.opsForValue();
-        valueOps.append("%s-quote".formatted(ticker), data);
+        valueOps.set("%s-quote".formatted(ticker), data, Duration.ofHours(cacheDuration));
     }
 
     public Optional<String> getQuoteData(String ticker) {
@@ -46,7 +49,7 @@ public class StockDataRepo {
 
     public void cacheEarningsData(String ticker, String data) {
         ValueOperations<String, String> valueOps = template.opsForValue();
-        valueOps.append("%s-earnings".formatted(ticker), data);
+        valueOps.set("%s-earnings".formatted(ticker), data, Duration.ofHours(cacheDuration));
     }
 
     public Optional<String> getEarningsData(String ticker) {

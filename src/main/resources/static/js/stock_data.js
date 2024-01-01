@@ -9,7 +9,7 @@ let financials_url = "/data/financials";
 let earnings_url = "/data/earnings";
 let data = {ticker:ticker};
 let active = "News";
-let refreshTimeout = 15000;
+let refreshTimeout = 25000;
 
 function toPercent(decimal){
     return ((decimal) * 100).toFixed(2) + '%';
