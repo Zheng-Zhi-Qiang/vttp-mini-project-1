@@ -217,6 +217,7 @@ public class PortfolioService {
                     .build();
             ResponseEntity<String> resp = template.exchange(req, String.class);
             data = resp.getBody();
+            dataRepo.cacheEarningsData(ticker, data);
         } else {
             data = opt.get();
         }
